@@ -73,5 +73,5 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log(`📺 SSR Page available at: http://localhost:${PORT}/movies-ssr`);
+    console.log(`SSR Page available at: http://localhost:${PORT}/movies-ssr`);
 });

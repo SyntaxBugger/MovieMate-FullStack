@@ -1,14 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const logger = (req, res, next) => {
-    const log = (`${req.method} request to ${req.url}`);
+    const log = `[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`;
     fs.appendFile(
         path.join(__dirname, '..', 'logs', 'requests.txt'),
-        log,
+        log + '\n',
         (err) => {
-            if (err) console.error(err);
+            if (err) console.error("Log write error:", err);
         }
     );
-    next(); 
+    console.log(log);
+    next();
 };
 module.exports = logger;

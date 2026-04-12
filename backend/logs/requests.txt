@@ -1,1 +1,14 @@
-GET request to /api/library/addPOST request to /api/library/addGET request to /api/tmdb/movie/popularGET request to /test.htmlGET request to /staticGET request to /static/GET request to /static/test.html1    DELETE request to /api/library/deleteGET request to /api/library/addGET request to /api/library/addGET request to /api/library/addGET request to /api/library/addGET request to /api/library/addPOST request to /api/library/addPOST request to /api/library/addPOST request to /api/library/addGET request to /favorites?userId=16bdGET request to /favorites?userId=16bdGET request to /api/tmdb/movie/550GET request to /api/tmdb/movie/550GET request to /api/tmdb/movie/1773217545530GET request to /api/tmdb/movie/1773217545530GET request to /api/tmdb/movie/1773217545530GET request to /api/tmdb/movie/popularGET request to /api/tmdb/movie/popularGET request to /api/tmdb/movie/popularGET request to /api/tmdb/movie/popularGET request to /api/tmdb/search/movie?query=fight+club&page=1GET request to /api/tmdb/movie/popularGET request to /api/tmdb/movie/popularGET request to /api/tmdb/search/movie?query=fight+club&page=1GET request to /api/tmdb/search/movie?query=fight+club&page=1GET request to /api/tmdb/search/movie?query=fight+club&page=1GET request to /api/tmdb/movie/popularGET request to /api/tmdb/movie/popularGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssrGET request to /favicon.icoGET request to /movies-ssr
+GET request to /movies-ssr
+GET request to /static/media_files/image.png
+GET request to /static/media_files/movielight.mp4
+GET request to /static/media_files/movielight.mp4
+GET request to /movies-ssr
+GET request to /static/media_files/movielight.mp4
+GET request to /static/media_files/image.png
+GET request to /movies-ssr
+GET request to /static/media_files/image.png
+GET request to /static/media_files/movielight.mp4
+[10:26:28 am] GET /static/media_files/movielight.mp4
+[10:26:31 am] GET /movies-ssr
+[10:26:31 am] GET /static/media_files/image.png
+[10:26:31 am] GET /static/media_files/movielight.mp4
