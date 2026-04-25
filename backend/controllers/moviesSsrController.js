@@ -4,15 +4,14 @@ const renderMoviesSSR = async (req, res) => {
     const data = await response.json();
 
     res.render("movies-ssr", {
-      movies: data.results,
+      movies: data.results || [],
       title: "Popular Movies"
     });
 
   } catch (error) {
     res.render("movies-ssr", {
       movies: [],
-      title: "Error",
-      error: "Failed to fetch movies"
+      title: "Error"
     });
   }
 };

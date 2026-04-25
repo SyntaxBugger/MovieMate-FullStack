@@ -38,7 +38,13 @@ const register = async (req, res) => {
       password: hashedPassword
     });
 
+    const io = req.app.get("io");
+    io.emit("userActivity", {
+      message: "New user registered "
+    });
+
     res.status(201).json({ message: 'Registered successfully' });
+    
 
   } catch (error) {
     res.status(500).json({ message: 'Registration failed', error: error.message });
@@ -70,6 +76,12 @@ const login = async (req, res) => {
       accessToken,
       refreshToken
     });
+    
+    const io = req.app.get("io");
+
+io.emit("userActivity", {
+    message: "User logged in "
+});
 
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });

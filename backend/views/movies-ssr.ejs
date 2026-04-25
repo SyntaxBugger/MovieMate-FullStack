@@ -655,6 +655,7 @@
         <span onclick="openModal('Home - Welcome to MovieMate!')">Home</span>
         <span onclick="openModal('Movies - Browse our collection of popular movies.')">Movies</span>
         <span onclick="openModal('TV Shows - Coming soon!')">TV Shows</span>
+        <button onclick="goLogin()">Login</button>
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Search for movies...">
@@ -712,8 +713,53 @@
     </div>
 
     <!-- Movies Grid -->
-    <div class="movies-grid" id="moviesGrid"></div>
-    <div class="pagination" id="pagination"></div>
+    <div class="movies-grid">
+
+    <% if (movies.length === 0) { %>
+        <div style="text-align:center; grid-column:1/-1; padding:3rem;">
+            No movies found
+        </div>
+    <% } %>
+
+    <% movies.forEach(movie => { %>
+        <div class="movie-card"
+            data-title="<%= movie.title %>"
+            data-year="<%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>"
+            data-rating="<%= movie.vote_average %>">
+
+            <div class="movie-bg"
+                style="background-image: url('https://image.tmdb.org/t/p/original<%= movie.poster_path %>')">
+            </div>
+
+            <div class="movie-content">
+
+                <img class="poster"
+                    src="<%= movie.poster_path 
+                        ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path 
+                        : 'https://via.placeholder.com/300x450?text=No+Poster' %>"
+                />
+
+                <button class="fav-btn"
+                    onclick="event.stopPropagation(); addFav(<%= movie.id %>, '<%= movie.title %>')">
+                    <i class="fas fa-heart"></i>
+                </button>
+
+                <div class="title"><%= movie.title %></div>
+
+                <div class="meta">
+                    <span class="rating">
+                        <i class="fas fa-star"></i> <%= movie.vote_average %>
+                    </span>
+                    <span class="year">
+                        <%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    <% }) %>
+
+</div>
 </div>
 
 <!-- Toast -->
@@ -733,123 +779,34 @@
     <p>© 2026 <i class="fas fa-film"></i> MOVIEMATE | All Rights Reserved</p>
     <p>Server-Side Rendered (SSR) with EJS | Netflix Style Design</p>
 </div>
-
+<script src="/socket.io/socket.io.js"></script>
 <script>
-    // MOCK MOVIE DATA
-    const movieData = [
-        { id: 1, title: "Inception", year: 2010, rating: 8.8, genre: "action", poster: "/9gk7adHYeDvHkCSEqAvQNLV5Uyi.jpg" },
-        { id: 2, title: "Interstellar", year: 2014, rating: 8.6, genre: "drama", poster: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
-        { id: 3, title: "The Dark Knight", year: 2008, rating: 9.0, genre: "action", poster: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg" },
-        { id: 4, title: "The Matrix", year: 1999, rating: 8.7, genre: "action", poster: "/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg" },
-        { id: 5, title: "John Wick", year: 2014, rating: 7.4, genre: "action", poster: "/fZPSd2y4qGUc7jrzQhziVYGT7sS.jpg" },
-        { id: 6, title: "Avengers Endgame", year: 2019, rating: 8.4, genre: "action", poster: "/or06FN3Dka5tukK1e9sl16pB3iy.jpg" },
-        { id: 7, title: "Parasite", year: 2019, rating: 8.6, genre: "drama", poster: "/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg" },
-        { id: 8, title: "Joker", year: 2019, rating: 8.5, genre: "drama", poster: "/udDclJoHjfjb8EkxOU4RnFfWBSj.jpg" },
-        { id: 9, title: "Oppenheimer", year: 2023, rating: 8.5, genre: "drama", poster: "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" },
-        { id: 10, title: "Barbie", year: 2023, rating: 7.0, genre: "comedy", poster: "/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg" },
-        { id: 11, title: "Top Gun Maverick", year: 2022, rating: 8.3, genre: "action", poster: "/62HCnUTziyWcpDaBO2i1DX17ljH.jpg" },
-        { id: 12, title: "Dune", year: 2021, rating: 8.0, genre: "action", poster: "/d5NXSklXo0qyIYkgV94XAgMIckC.jpg" }
-    ];
+    const socket = io();
 
-    let currentPage = 1;
-    let currentFilter = 'all';
-    let currentSort = 'default';
-    let favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-    const itemsPerPage = 8;
+socket.on("userActivity", (data) => {
+    showToast(data.message);
+});
 
+socket.on("notification", (msg) => {
+    showToast(msg);
+});
     function showToast(message) {
         const toast = document.getElementById('toast');
         toast.textContent = message;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2000);
     }
+    function goLogin() {
+    window.location.href = "/login";
+}
+    
 
-    function filterAndSortMovies() {
-        let filtered = [...movieData];
-        if (currentFilter !== 'all') {
-            filtered = filtered.filter(m => m.genre === currentFilter);
-        }
-        if (currentSort === 'rating') {
-            filtered.sort((a, b) => b.rating - a.rating);
-        } else if (currentSort === 'year') {
-            filtered.sort((a, b) => b.year - a.year);
-        } else if (currentSort === 'title') {
-            filtered.sort((a, b) => a.title.localeCompare(b.title));
-        }
-        return filtered;
-    }
+   
+    
 
-    function renderMovies() {
-        const filtered = filterAndSortMovies();
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
-        const start = (currentPage - 1) * itemsPerPage;
-        const paginated = filtered.slice(start, start + itemsPerPage);
-        
-        document.getElementById('totalMovies').textContent = filtered.length;
-        const avgRating = filtered.length > 0 
-            ? (filtered.reduce((sum, m) => sum + m.rating, 0) / filtered.length).toFixed(1)
-            : '0';
-        document.getElementById('avgRating').textContent = avgRating;
-        document.getElementById('favouritesCount').textContent = favourites.length;
-        
-        const grid = document.getElementById('moviesGrid');
-        if (paginated.length === 0) {
-            grid.innerHTML = '<div style="text-align: center; grid-column: 1/-1; padding: 3rem;">No movies found.</div>';
-            document.getElementById('pagination').innerHTML = '';
-            return;
-        }
-        
-        grid.innerHTML = paginated.map(movie => `
-            <div class="movie-card" data-id="${movie.id}" data-title="${movie.title}" data-year="${movie.year}" data-rating="${movie.rating}">
-                <div class="movie-bg" style="background-image: url('https://image.tmdb.org/t/p/original${movie.poster}')"></div>
-                <div class="movie-content">
-                    <img class="poster" src="https://image.tmdb.org/t/p/w500${movie.poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
-                    <button class="fav-btn ${favourites.includes(movie.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavourite(${movie.id}, '${movie.title}')">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <div class="title">${movie.title}</div>
-                    <div class="meta">
-                        <span class="rating"><i class="fas fa-star"></i> ${movie.rating}</span>
-                        <span class="year">${movie.year}</span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-        renderPagination(totalPages);
-    }
+  
 
-    function renderPagination(totalPages) {
-        const paginationDiv = document.getElementById('pagination');
-        if (totalPages <= 1) {
-            paginationDiv.innerHTML = '';
-            return;
-        }
-        let html = `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="changePage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
-        for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-            html += `<button class="page-btn ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
-        }
-        html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="changePage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
-        paginationDiv.innerHTML = html;
-    }
-
-    function changePage(page) {
-        currentPage = page;
-        renderMovies();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function toggleFavourite(id, title) {
-        if (favourites.includes(id)) {
-            favourites = favourites.filter(f => f !== id);
-            showToast(`Removed "${title}" from favourites`);
-        } else {
-            favourites.push(id);
-            showToast(`Added "${title}" to favourites!`);
-        }
-        localStorage.setItem('favourites', JSON.stringify(favourites));
-        renderMovies();
-    }
+    
 
     function openModal(message) {
         document.getElementById('modalMessage').textContent = message;
@@ -859,70 +816,62 @@
     function closeModal() {
         document.getElementById('modal').classList.remove('show');
     }
+    document.getElementById('searchInput').addEventListener('input', async function () {
+    const query = this.value.trim();
 
-    // Event Listeners
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilter = this.dataset.filter;
-            currentPage = 1;
-            renderMovies();
-        });
-    });
+    if (!query) {
+        location.reload(); // fallback to SSR
+        return;
+    }
 
-    document.getElementById('sortSelect').addEventListener('change', function(e) {
-        currentSort = e.target.value;
-        currentPage = 1;
-        renderMovies();
-    });
+    const res = await fetch(`/api/tmdb/search/movie?query=${query}`);
+    const data = await res.json();
 
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const filtered = movieData.filter(m => m.title.toLowerCase().includes(searchTerm));
-        
-        if (filtered.length === 0) {
-            document.getElementById('moviesGrid').innerHTML = '<div style="text-align: center; grid-column: 1/-1; padding: 3rem;">No movies found</div>';
-            document.getElementById('pagination').innerHTML = '';
-            document.getElementById('totalMovies').textContent = '0';
-            document.getElementById('avgRating').textContent = '0';
-        } else {
-            document.getElementById('moviesGrid').innerHTML = filtered.map(movie => `
-                <div class="movie-card" data-id="${movie.id}">
-                    <div class="movie-bg" style="background-image: url('https://image.tmdb.org/t/p/original${movie.poster}')"></div>
-                    <div class="movie-content">
-                        <img class="poster" src="https://image.tmdb.org/t/p/w500${movie.poster}" alt="${movie.title}">
-                        <button class="fav-btn ${favourites.includes(movie.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavourite(${movie.id}, '${movie.title}')">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                        <div class="title">${movie.title}</div>
-                        <div class="meta">
-                            <span class="rating"><i class="fas fa-star"></i> ${movie.rating}</span>
-                            <span class="year">${movie.year}</span>
-                        </div>
-                    </div>
+    const grid = document.querySelector('.movies-grid');
+
+    if (!data.results || data.results.length === 0) {
+        grid.innerHTML = `<div style="text-align:center; grid-column:1/-1;">No results</div>`;
+        return;
+    }
+
+    grid.innerHTML = data.results.map(movie => `
+        <div class="movie-card">
+            <div class="movie-bg" style="background-image:url('https://image.tmdb.org/t/p/original${movie.poster_path}')"></div>
+            <div class="movie-content">
+                <img class="poster" src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
+                <div class="title">${movie.title}</div>
+                <div class="meta">
+                    ${movie.vote_average} |
+                    ${movie.release_date?.split('-')[0] || 'N/A'}
                 </div>
-            `).join('');
-            document.getElementById('totalMovies').textContent = filtered.length;
-            const avgRating = (filtered.reduce((sum, m) => sum + m.rating, 0) / filtered.length).toFixed(1);
-            document.getElementById('avgRating').textContent = avgRating;
-            document.getElementById('pagination').innerHTML = '';
-        }
-    });
+            </div>
+        </div>
+    `).join('');
+});
 
-    document.getElementById('exploreBtn').addEventListener('click', () => openModal('Welcome to MovieMate! Explore thousands of movies!'));
-    document.getElementById('learnMoreBtn').addEventListener('click', () => openModal('MovieMate uses EJS for Server-Side Rendering!'));
+function addFav(id, title) {
+    const token = localStorage.getItem("token");
 
-    document.getElementById('moviesGrid').addEventListener('click', (e) => {
-        const card = e.target.closest('.movie-card');
-        if (card && !e.target.closest('.fav-btn')) {
-            const title = card.dataset.title;
-            const year = card.dataset.year;
-            const rating = card.dataset.rating;
-            openModal(`${title} (${year})\nRating: ${rating}/10`);
-        }
-    });
+    if (!token) {
+        alert("Login first");
+        return;
+    }
 
+    fetch("/api/library/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+            movieId: id,
+            title: title,
+            poster_path: "",
+            media_type: "movie"
+        })
+    })
+    .then(() => showToast(`Added "${title}" ❤️`))
+}
     window.addEventListener('scroll', () => {
         const navbar = document.getElementById('navbar');
         if (window.scrollY > 50) {
@@ -933,7 +882,7 @@
     });
 
     // Initialize
-    renderMovies();
+    
     console.log('MovieMate Loaded -', movieData.length, 'movies ready');
 </script>
 
