@@ -67,27 +67,32 @@ const login = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user);
 
+    // ✅ set cookie
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 60 * 60 * 1000
+    });
 
     user.refreshToken = refreshToken;
     await user.save();
+
+    // 🔥 emit BEFORE sending response
+    const io = req.app.get("io");
+    io.emit("userActivity", {
+      message: "User logged in 👤"
+    });
 
     res.json({
       message: 'Login successful',
       accessToken,
       refreshToken
     });
-    
-    const io = req.app.get("io");
-
-io.emit("userActivity", {
-    message: "User logged in "
-});
 
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
-
 
 const refresh = async (req, res) => {
   try {
@@ -122,18 +127,22 @@ const logout = async (req, res) => {
   try {
     const { refreshToken } = req.body;
 
-    await User.findOneAndUpdate(
-      { refreshToken },
-      { refreshToken: null }
-    );
 
-    res.json({ message: 'Logged out successfully' });
+    if (refreshToken) {
+      await User.findOneAndUpdate(
+        { refreshToken },
+        { refreshToken: null }
+      );
+    }
+
+    res.clearCookie("token");
+
+    res.json({ message: "Logged out successfully" });
 
   } catch (error) {
     res.status(500).json({ message: 'Logout failed', error: error.message });
   }
 };
-
 module.exports = {
   register,
   login,

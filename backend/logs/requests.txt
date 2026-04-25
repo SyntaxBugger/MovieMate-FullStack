@@ -144,3 +144,7 @@ GET request to /static/media_files/movielight.mp4
 [5:43:22 pm] GET /api/tmdb/movie/popular
 [5:43:22 pm] GET /static/media_files/movielight.mp4
 [5:43:22 pm] GET /static/media_files/image.png
+[6:01:32 pm] POST /api/auth/register
+[6:01:46 pm] POST /api/auth/login
+[6:02:26 pm] GET /api/library
+[6:02:41 pm] POST /api/auth/logout

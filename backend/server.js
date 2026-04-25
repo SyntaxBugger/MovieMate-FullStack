@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./config/db');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const http = require('http');
 const { Server } = require('socket.io');
@@ -48,6 +49,7 @@ app.use(session({
 // Middleware
 app.use(express.json());
 app.use(logger);
+app.use(cookieParser());
 
 // Serve Static Files
 app.use('/static', express.static(path.join(__dirname, 'public')));
