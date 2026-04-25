@@ -1,0 +1,6 @@
+[2026-04-25T03:42:37.157Z] GET /api/library/add - ERROR: Cannot GET /api/library/add
+[2026-04-25T03:43:04.846Z] GET /api/library/add - ERROR: Cannot GET /api/library/add
+[2026-04-25T03:44:12.399Z] GET /api/library/add - ERROR: Cannot GET /api/library/add
+[2026-04-25T03:44:31.813Z] GET /api/library/add - ERROR: Cannot GET /api/library/add
+[2026-04-25T03:45:20.821Z] GET /api/library/add - ERROR: Cannot GET /api/library/add
+[2026-04-25T04:04:17.179Z] GET /api/auth/refresh - ERROR: Cannot GET /api/auth/refresh

@@ -1,53 +1,74 @@
-const fs = require('fs');
-const path = require('path');
+const Library = require('../models/Library');
 
-const dataPath = path.join(__dirname, '../data/library.json');
-
-const readData = () => {
-    const data = fs.readFileSync(dataPath, 'utf-8');
-    return JSON.parse(data);
+// 📚 GET USER LIBRARY
+const getLibrary = async (req, res, next) => {
+  try {
+    const items = await Library.find({ userId: req.user.id });
+    res.status(200).json(items);
+  } catch (error) {
+    next(error);
+  }
 };
 
-const getLibrary = (req, res, next) => {
-    try {
-        const library = readData();
-        res.status(200).json(library);
-    } catch (error) {
-        next(error); 
+// ➕ ADD TO LIBRARY
+const addToLibrary = async (req, res, next) => {
+  try {
+    const { movieId, title, poster_path, media_type } = req.body;
+
+    if (!movieId || !title) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
-};
 
-const addToLibrary = (req, res, next) => {
-    try {
-        const { movieId, title, poster_path, media_type } = req.body;
-        const library = readData();
+    const exists = await Library.findOne({
+      userId: req.user.id,
+      movieId
+    });
 
-        if (library.find(item => item.movieId === movieId)) {
-            return res.status(400).json({ message: "Already in your library" });
-        }
-
-        const newItem = { id: Date.now(), movieId, title, poster_path, media_type };
-        library.push(newItem);
-
-        fs.writeFileSync(dataPath, JSON.stringify(library, null, 2));
-        res.status(201).json({ message: "Added successfully!", item: newItem });
-    } catch (error) {
-        next(error);
+    if (exists) {
+      return res.status(400).json({ message: "Already in your library" });
     }
+
+    const newItem = await Library.create({
+      userId: req.user.id,
+      movieId,
+      title,
+      poster_path,
+      media_type
+    });
+
+    res.status(201).json({
+      message: "Added successfully!",
+      item: newItem
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };
 
-const removeFromLibrary = (req, res, next) => {
-    try {
-        const idToRemove = parseInt(req.params.id); 
-        let library = readData();
+// ❌ REMOVE FROM LIBRARY
+const removeFromLibrary = async (req, res, next) => {
+  try {
+    const idToRemove = req.params.id;
 
-        library = library.filter(item => item.id !== idToRemove);
-        
-        fs.writeFileSync(dataPath, JSON.stringify(library, null, 2));
-        res.status(200).json({ message: "Item deleted from library." });
-    } catch (error) {
-        next(error);
+    const deleted = await Library.findOneAndDelete({
+      _id: idToRemove,
+      userId: req.user.id
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Item not found" });
     }
+
+    res.status(200).json({ message: "Item removed successfully" });
+
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports = { getLibrary, addToLibrary, removeFromLibrary };
+module.exports = {
+  getLibrary,
+  addToLibrary,
+  removeFromLibrary
+};
