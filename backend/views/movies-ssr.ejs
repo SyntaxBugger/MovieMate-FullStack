@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOVIEMATE - SSR Movies | Netflix Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOVIEMATE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
         body {
             font-family: 'Inter', sans-serif;
@@ -679,6 +681,8 @@
             .title { font-size: 0.9rem; }
         }
     </style>
+
+</style>
 </head>
 
 <body>
@@ -701,129 +705,130 @@
     </div>
 </nav>
 
-<!-- HERO SECTION -->
-<div class="hero">
-    <div class="hero-content">
-        <h1>Discover Your Next<br><span>Favourite Movie</span></h1>
-        <p>Entertainment Hub - Explore thousands of movies and TV shows with MovieMate. Find hidden gems, trending content, and personalized recommendations all in one place.</p>
-        <div class="hero-buttons">
-            <button class="btn-primary" id="exploreBtn">Explore Movies</button>
-            <button class="btn-secondary" id="learnMoreBtn">Learn More</button>
-        </div>
-    </div>
-</div>
+<!-- HERO -->
+<section class="hero">
+<h1>Discover Your Next <br><span>Favourite Movie</span></h1>
+</section>
 
+<!-- MOVIES -->
 <div class="container">
-    <div class="ssr-badge">
-        <i class="fas fa-server"></i> Server-Side Rendered with EJS | Netflix Style
-    </div>
 
-    <!-- Filters -->
-    <div class="filters">
-        <div class="filter-group">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="action">Action</button>
-            <button class="filter-btn" data-filter="drama">Drama</button>
-            <button class="filter-btn" data-filter="comedy">Comedy</button>
-        </div>
-        <select class="sort-select" id="sortSelect">
-            <option value="default">Sort by: Default</option>
-            <option value="rating">Sort by: Rating ↓</option>
-            <option value="year">Sort by: Year ↓</option>
-            <option value="title">Sort by: Title A-Z</option>
-        </select>
-    </div>
+<div class="movies-grid" id="moviesGrid">
 
-    <!-- Stats -->
-    <div class="stats-section">
-        <div class="stat-card">
-            <div class="stat-value" id="totalMovies">0</div>
-            <div class="stat-label">Movies Available</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="avgRating">0</div>
-            <div class="stat-label">Avg Rating</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="favouritesCount">0</div>
-            <div class="stat-label">My Favourites</div>
-        </div>
-    </div>
+<% movies.forEach(function(movie){ %>
 
-    <!-- Movies Grid -->
-    <div class="movies-grid">
+<div class="movie-card"
+data-id="<%= movie.id %>"
+data-title="<%= movie.title %>"
+data-rating="<%= movie.vote_average %>"
+data-year="<%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>">
 
-    <% if (movies.length === 0) { %>
-        <div style="text-align:center; grid-column:1/-1; padding:3rem;">
-            No movies found
-        </div>
-    <% } %>
+<img class="poster"
+src="<%= movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : '/static/media_files/image.png' %>">
 
-    <% movies.forEach(movie => { %>
-        <div class="movie-card"
-            data-title="<%= movie.title %>"
-            data-year="<%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>"
-            data-rating="<%= movie.vote_average %>">
+<button class="fav-btn"
+    data-id="<%= movie.id %>"
+    data-title="<%= movie.title %>"
+    onclick="event.stopPropagation(); addFav(this.dataset.id, this.dataset.title)">
+    <i class="fas fa-heart"></i>
+</button>
 
-            <div class="movie-bg"
-                style="background-image: url('https://image.tmdb.org/t/p/original<%= movie.poster_path %>')">
-            </div>
+<div class="movie-content">
 
-            <div class="movie-content">
+<div class="title"><%= movie.title %></div>
 
-                <img class="poster"
-                    src="<%= movie.poster_path 
-                        ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path 
-                        : 'https://via.placeholder.com/300x450?text=No+Poster' %>"
-                />
-
-                <button class="fav-btn"
-                    onclick="event.stopPropagation(); addFav(<%= movie.id %>, '<%= movie.title %>')">
-                    <i class="fas fa-heart"></i>
-                </button>
-
-                <div class="title"><%= movie.title %></div>
-
-                <div class="meta">
-                    <span class="rating">
-                        <i class="fas fa-star"></i> <%= movie.vote_average %>
-                    </span>
-                    <span class="year">
-                        <%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>
-                    </span>
-                </div>
-
-            </div>
-        </div>
-    <% }) %>
+<div class="meta">
+<span>⭐ <%= movie.vote_average %></span>
+<span><%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %></span>
+</div>
 
 </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast">Movie added to favourites!</div>
+<% }) %>
 
-<!-- Modal -->
+</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
 <div class="modal" id="modal">
-    <div class="modal-content">
-        <h3><i class="fas fa-info-circle"></i> MovieMate</h3>
-        <p id="modalMessage">Welcome to MovieMate!</p>
-        <button class="modal-close" onclick="closeModal()">Got it!</button>
-    </div>
+<div class="modal-box">
+<h2>MovieMate</h2>
+<p id="modalText"></p>
+<button onclick="closeModal()">Close</button>
+</div>
 </div>
 
-<!-- Footer -->
-<div class="footer">
-    <p>© 2026 <i class="fas fa-film"></i> MOVIEMATE | All Rights Reserved</p>
-    <p>Server-Side Rendered (SSR) with EJS | Netflix Style Design</p>
-</div>
 <script src="/socket.io/socket.io.js"></script>
+
 <script>
+
+/* SOCKET */
+if(typeof io !== "undefined"){
     const socket = io();
 
 socket.on("userActivity", (data) => {
     showToast(data.message);
 });
+
+/* FUNCTIONS */
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
+function openModal(text) {
+    document.getElementById("modalText").textContent = text;
+    document.getElementById("modal").classList.add("show");
+}
+
+function closeModal() {
+    document.getElementById("modal").classList.remove("show");
+}
+
+function goLogin() {
+    window.location.href = "/login";
+}
+
+function logout() {
+    fetch("/logout", { method: "POST" })
+        .then(() => {
+            window.location.reload();
+        });
+}
+
+async function addFav(id, title) {
+    try {
+        const res = await fetch("/api/library/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ movieId: id, title: title })
+        });
+
+        const data = await res.json();
+
+        if(data.success){
+            showToast("Added " + title + " ❤️");
+        }else{
+            showToast("Failed");
+        }
+
+    }catch(error){
+        showToast("Server Error");
+    }
+
+}
+
+/* READY */
+const movieCards = document.querySelectorAll(".movie-card");
+console.log("Loaded:", movieCards.length);
 
 socket.on("notification", (msg) => {
     showToast(msg);
@@ -871,78 +876,153 @@ socket.on("notification", (msg) => {
         document.getElementById('modalMessage').textContent = message;
         document.getElementById('modal').classList.add('show');
     }
-
-    function closeModal() {
-        document.getElementById('modal').classList.remove('show');
-    }
-    document.getElementById('searchInput').addEventListener('input', async function () {
-    const query = this.value.trim();
-
-    if (!query) {
-        location.reload(); // fallback to SSR
-        return;
-    }
-
-    const res = await fetch(`/api/tmdb/search/movie?query=${query}`);
-    const data = await res.json();
-
-    const grid = document.querySelector('.movies-grid');
-
-    if (!data.results || data.results.length === 0) {
-        grid.innerHTML = `<div style="text-align:center; grid-column:1/-1;">No results</div>`;
-        return;
-    }
-
-    grid.innerHTML = data.results.map(movie => `
-        <div class="movie-card">
-            <div class="movie-bg" style="background-image:url('https://image.tmdb.org/t/p/original${movie.poster_path}')"></div>
-            <div class="movie-content">
-                <img class="poster" src="https://image.tmdb.org/t/p/w500${movie.poster_path}">
-                <div class="title">${movie.title}</div>
-                <div class="meta">
-                    ${movie.vote_average} |
-                    ${movie.release_date?.split('-')[0] || 'N/A'}
-                </div>
-            </div>
-        </div>
-    `).join('');
-});
-
-function addFav(id, title) {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        alert("Login first");
-        return;
-    }
-
-    fetch("/api/library/add", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify({
-            movieId: id,
-            title: title,
-            poster_path: "",
-            media_type: "movie"
-        })
-    })
-    .then(() => showToast(`Added "${title}" ❤️`))
-}
-    window.addEventListener('scroll', () => {
-        const navbar = document.getElementById('navbar');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
+    socket.on("notification", function(msg){
+        showToast(msg);
     });
 
-    // Initialize
-    
-    console.log('MovieMate Loaded -', movieData.length, 'movies ready');
+    socket.on("userActivity", function(data){
+        showToast(data.message);
+    });
+}
+
+/* ELEMENTS */
+const grid = document.getElementById("moviesGrid");
+const searchInput = document.getElementById("searchInput");
+const originalHTML = grid.innerHTML;
+
+/* TOAST */
+function showToast(message){
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(function(){
+        toast.classList.remove("show");
+    },2000);
+}
+
+/* LOGIN */
+function goLogin(){
+    window.location.href="/login";
+}
+
+/* MODAL */
+function openModal(message){
+    document.getElementById("modalText").textContent = message;
+    document.getElementById("modal").classList.add("show");
+}
+
+function closeModal(){
+    document.getElementById("modal").classList.remove("show");
+}
+
+/* SEARCH */
+searchInput.addEventListener("input", async function(){
+
+    const query = this.value.trim();
+
+    if(query === ""){
+        grid.innerHTML = originalHTML;
+        return;
+    }
+
+    try{
+
+        const res = await fetch("/api/tmdb/search/movie?query=" + encodeURIComponent(query));
+        const data = await res.json();
+
+        if(!data.results || data.results.length === 0){
+            grid.innerHTML = "<h2>No Results Found</h2>";
+            return;
+        }
+
+        let html = "";
+
+        data.results.forEach(function(movie){
+
+            let image = movie.poster_path
+            ? "https://image.tmdb.org/t/p/w500" + movie.poster_path
+            : "/static/media_files/image.png";
+
+            let year = movie.release_date
+            ? movie.release_date.split("-")[0]
+            : "N/A";
+
+            html += `
+            <div class="movie-card">
+
+                <img class="poster" src="${image}">
+
+                <button class="fav-btn"
+                onclick="addFav(${movie.id}, '${movie.title}')">
+                <i class="fas fa-heart"></i>
+                </button>
+
+                <div class="movie-content">
+                    <div class="title">${movie.title}</div>
+
+                    <div class="meta">
+                        <span>⭐ ${movie.vote_average}</span>
+                        <span>${year}</span>
+                    </div>
+                </div>
+
+            </div>
+            `;
+        });
+
+        grid.innerHTML = html;
+
+    }catch(error){
+        showToast("Search failed");
+    }
+
+});
+
+/* ADD FAV */
+async function addFav(id,title){
+
+    const token = localStorage.getItem("token");
+
+    if(!token){
+        alert("Please login first");
+        return;
+    }
+
+    try{
+
+        const res = await fetch("/api/library/add",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer " + token
+            },
+            body:JSON.stringify({
+                movieId:id,
+                title:title,
+                media_type:"movie",
+                poster_path:""
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.success){
+            showToast("Added " + title + " ❤️");
+        }else{
+            showToast("Failed");
+        }
+
+    }catch(error){
+        showToast("Server Error");
+    }
+
+}
+
+/* READY */
+const movieCards = document.querySelectorAll(".movie-card");
+console.log("Loaded:", movieCards.length);
+
 </script>
 
 </body>
