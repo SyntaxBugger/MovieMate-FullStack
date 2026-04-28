@@ -6,3 +6,6 @@
 [2026-04-25T04:04:17.179Z] GET /api/auth/refresh - ERROR: Cannot GET /api/auth/refresh
 [2026-04-25T07:11:04.612Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
 [2026-04-25T10:24:43.599Z] GET /favourites - ERROR: Cannot GET /favourites
+[2026-04-27T17:19:48.691Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
+[2026-04-27T17:19:49.690Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
+[2026-04-27T17:20:30.760Z] GET /api/tmdb/search/movie?query=h - ERROR: fetch failed
