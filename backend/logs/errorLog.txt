@@ -24,3 +24,9 @@
 [2026-04-28T06:17:47.417Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
 [2026-04-28T06:17:49.700Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
 [2026-04-28T06:17:55.532Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
+[2026-04-28T09:38:02.344Z] GET /api/library/add - ERROR: Cannot GET /api/library/add
+[2026-04-28T10:01:06.563Z] GET /api/invalid/route/123 - ERROR: Cannot GET /api/invalid/route/123
+[2026-04-28T10:01:17.544Z] GET /api/tmdb/movie/999999999 - ERROR: TMDB Error: 404
+[2026-04-28T10:02:14.394Z] GET /api/auth/login - ERROR: Cannot GET /api/auth/login
+[2026-04-28T10:20:32.300Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
+[2026-04-28T10:25:30.808Z] GET /api/tmdb/movie/popular - ERROR: fetch failed

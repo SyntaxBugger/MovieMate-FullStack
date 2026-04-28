@@ -1,3 +1,6 @@
+// ================================
+// models/Library.js
+// ================================
 const mongoose = require('mongoose');
 
 const librarySchema = new mongoose.Schema({
@@ -12,7 +15,23 @@ const librarySchema = new mongoose.Schema({
   },
   title: String,
   poster_path: String,
-  media_type: String
+  media_type: String,
+
+  watched: {
+    type: Boolean,
+    default: false
+  },
+
+  rating: {
+    type: Number,
+    default: 0
+  },
+
+  notes: {
+    type: String,
+    default: ""
+  }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Library', librarySchema);
