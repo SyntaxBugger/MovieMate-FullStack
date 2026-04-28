@@ -6,3 +6,4 @@
 [2026-04-25T04:04:17.179Z] GET /api/auth/refresh - ERROR: Cannot GET /api/auth/refresh
 [2026-04-25T07:11:04.612Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
 [2026-04-25T10:24:43.599Z] GET /favourites - ERROR: Cannot GET /favourites
+[2026-04-28T04:28:10.142Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico

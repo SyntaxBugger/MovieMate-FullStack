@@ -130,6 +130,43 @@
             opacity: 0.6;
         }
 
+        .nav-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.3rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+            color: #E0E7FF;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-action-btn:hover {
+            background: rgba(46, 196, 182, 0.14);
+            border-color: rgba(46, 196, 182, 0.4);
+            color: #A7F3D0;
+            transform: translateY(-1px);
+        }
+
+        .nav-action-btn.primary {
+            background: #2EC4B6;
+            color: #0B1F3A;
+            border-color: transparent;
+        }
+
+        .nav-action-btn.primary:hover {
+            background: #4EE1D3;
+            color: #0B1F3A;
+        }
+
+        .nav-links button {
+            margin-left: 0.5rem;
+        }
+
         /* Hero Section */
         .hero {
             padding: 6rem 2rem;
@@ -655,7 +692,8 @@
         <span onclick="openModal('Home - Welcome to MovieMate!')">Home</span>
         <span onclick="openModal('Movies - Browse our collection of popular movies.')">Movies</span>
         <span onclick="openModal('TV Shows - Coming soon!')">TV Shows</span>
-        <button onclick="goLogin()">Login</button>
+        <button class="nav-action-btn primary" id="loginBtn" onclick="goLogin()">Login</button>
+        <button class="nav-action-btn" id="logoutBtn" onclick="logout()">Logout</button>
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Search for movies...">
@@ -797,8 +835,29 @@ socket.on("notification", (msg) => {
         setTimeout(() => toast.classList.remove('show'), 2000);
     }
     function goLogin() {
-    window.location.href = "/login";
-}
+        window.location.href = "/login";
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        showToast('Logged out successfully');
+        updateAuthButtons();
+        setTimeout(() => window.location.href = '/login', 900);
+    }
+
+    function updateAuthButtons() {
+        const token = localStorage.getItem('token');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (loginBtn && logoutBtn) {
+            loginBtn.style.display = token ? 'none' : 'inline-flex';
+            logoutBtn.style.display = token ? 'inline-flex' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateAuthButtons);
+    updateAuthButtons();
+
     
 
    

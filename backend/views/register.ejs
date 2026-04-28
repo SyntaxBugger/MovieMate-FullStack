@@ -2,19 +2,161 @@
 <html>
 <head>
     <title>Register</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 22%),
+                        radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.14), transparent 18%),
+                        linear-gradient(160deg, #070b18 0%, #111827 100%);
+            color: #e2e8f0;
+        }
+
+        .page-card {
+            position: relative;
+            width: min(460px, calc(100vw - 32px));
+            padding: 38px 34px;
+            border-radius: 28px;
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            box-shadow: 0 28px 80px rgba(15, 23, 42, 0.42);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+        }
+
+        .page-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 28%),
+                        radial-gradient(circle at bottom left, rgba(96, 165, 250, 0.10), transparent 25%);
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .page-card > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 2.3rem;
+            letter-spacing: -0.04em;
+            text-align: center;
+            color: #f8fafc;
+            text-shadow: 0 10px 30px rgba(14, 165, 233, 0.15);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-top: 14px;
+        }
+
+        input {
+            width: 90%;
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.92);
+            color: #e2e8f0;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+            opacity: 1;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+            transform: translateY(-1px);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px 18px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(90deg, #2563eb 0%, #0ea5e9 100%);
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            box-shadow: 0 18px 30px rgba(37, 99, 235, 0.22);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.03);
+        }
+
+        p {
+            margin: 20px 0 0;
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        p a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(18px);
+            min-width: 260px;
+            padding: 14px 20px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.96);
+            color: #f8fafc;
+            font-size: 0.96rem;
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+            z-index: 1000;
+            border: 1px solid rgba(59, 130, 246, 0.16);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
 </head>
 <body>
 
-<h2>Register</h2>
+<div class="page-card">
+    <h2>Register</h2>
 
-<form id="registerForm">
-    <input type="text" id="name" placeholder="Name" required><br><br>
-    <input type="email" id="email" placeholder="Email" required><br><br>
-    <input type="password" id="password" placeholder="Password" required><br><br>
-    <button type="submit">Register</button>
-</form>
+    <form id="registerForm">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Register</button>
+    </form>
 
-<p>Already have an account? <a href="/login">Login</a></p>
+    <p>Already have an account? <a href="/login">Login</a></p>
+</div>
 
 <div id="toast"></div>
 
@@ -30,17 +172,9 @@ socket.on("userActivity", (data) => {
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
-    toast.style.position = "fixed";
-    toast.style.bottom = "20px";
-    toast.style.right = "20px";
-    toast.style.background = "black";
-    toast.style.color = "white";
-    toast.style.padding = "10px 20px";
-    toast.style.borderRadius = "8px";
-    toast.style.opacity = "1";
-
+    toast.classList.add('show');
     setTimeout(() => {
-        toast.style.opacity = "0";
+        toast.classList.remove('show');
     }, 2000);
 }
 
