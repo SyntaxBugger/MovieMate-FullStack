@@ -38,9 +38,20 @@ body{
 }
 
 .logo{
+    display:flex;
+    align-items:center;
+    gap:0.75rem;
     font-size:1.6rem;
     font-weight:800;
     color:#2EC4B6;
+}
+
+.logo-video{
+    width:44px;
+    height:44px;
+    border-radius:12px;
+    object-fit:cover;
+    background:#0a1a2c;
 }
 
 .nav-links{
@@ -64,10 +75,38 @@ body{
     color:#2EC4B6;
 }
 
+.nav-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    color: #E0E7FF;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.nav-action-btn:hover {
+    background: rgba(46, 196, 182, 0.14);
+    border-color: rgba(46, 196, 182, 0.4);
+    color: #A7F3D0;
+}
+
+.nav-action-btn.primary {
+    background: #2EC4B6;
+    color: #0B1F3A;
+    border-color: transparent;
+}
+
 .search-box{
     background:rgba(255,255,255,.08);
     padding:.55rem 1rem;
-    border-radius:8px;
+    border-radius:40px;
+    display:flex;
+    gap:8px;
 }
 
 .search-box input{
@@ -82,6 +121,7 @@ body{
 .hero{
     text-align:center;
     padding:5rem 2rem;
+    background: radial-gradient(circle at 10% 30%, rgba(46,196,182,0.15), transparent 60%);
 }
 
 .hero h1{
@@ -89,63 +129,9 @@ body{
     margin-bottom:1rem;
 }
 
-ankit
 .hero span{
     color:#2EC4B6;
 }
-
-        .nav-action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.3rem;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            background: rgba(255, 255, 255, 0.08);
-            color: #E0E7FF;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            letter-spacing: 0.01em;
-        }
-
-        .nav-action-btn:hover {
-            background: rgba(46, 196, 182, 0.14);
-            border-color: rgba(46, 196, 182, 0.4);
-            color: #A7F3D0;
-            transform: translateY(-1px);
-        }
-
-        .nav-action-btn.primary {
-            background: #2EC4B6;
-            color: #0B1F3A;
-            border-color: transparent;
-        }
-
-        .nav-action-btn.primary:hover {
-            background: #4EE1D3;
-            color: #0B1F3A;
-        }
-
-        .nav-links button {
-            margin-left: 0.5rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 6rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            background: url('/static/media_files/image.png') center/cover no-repeat;
-            border-radius: 0 0 30px 30px;
-            min-height: 550px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
- main
 
 /* GRID */
 .container{
@@ -207,11 +193,13 @@ ankit
     background:rgba(0,0,0,.6);
     color:white;
     cursor:pointer;
+    transition: all 0.2s;
 }
 
 .fav-btn:hover{
     background:#2EC4B6;
     color:black;
+    transform: scale(1.05);
 }
 
 /* TOAST */
@@ -266,137 +254,110 @@ ankit
     cursor:pointer;
 }
 
-/* MOBILE */
 @media(max-width:768px){
-
-.hero h1{
-    font-size:2rem;
-}
-
-.navbar{
-    flex-direction:column;
-}
+    .hero h1{
+        font-size:2rem;
+    }
+    .navbar{
+        flex-direction:column;
+    }
 }
 </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
+<!-- NAVBAR WITH VIDEO LOGO -->
 <nav class="navbar">
-
-<div class="logo">
-<i class="fas fa-film"></i> MOVIEMATE
-</div>
-
-<div class="nav-links">
-<span onclick="openModal('Welcome to MovieMate')">Home</span>
-<span onclick="openModal('Browse all movies')">Movies</span>
-<button onclick="goLogin()">Login</button>
-
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="Search movie...">
-</div>
-</div>
-
+    <div class="logo">
+        <video class="logo-video" src="/static/media_files/movielight.mp4" autoplay loop muted playsinline></video>
+    </div>
+    <div class="nav-links">
+        <span onclick="openModal('Welcome to MovieMate')">Home</span>
+        <span onclick="openModal('Browse all movies')">Movies</span>
+        <span onclick="openModal('TV Shows - Coming soon')">TV Shows</span>
+        <button class="nav-action-btn primary" id="loginBtn" onclick="goLogin()">Login</button>
+        <button class="nav-action-btn" id="logoutBtn" onclick="logout()">Logout</button>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search movie...">
+        </div>
+    </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-<h1>Discover Your Next <br><span>Favourite Movie</span></h1>
+    <h1>Discover Your Next <br><span>Favourite Movie</span></h1>
 </section>
 
-<!-- MOVIES -->
+<!-- MOVIES - EJS SECTION - USING DATA ATTRIBUTES (NO EXPRESSION ERROR) -->
 <div class="container">
-
-<div class="movies-grid" id="moviesGrid">
-
-<% movies.forEach(function(movie){ %>
-
-<div class="movie-card"
-data-id="<%= movie.id %>"
-data-title="<%= movie.title %>"
-data-rating="<%= movie.vote_average %>"
-data-year="<%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>">
-
-<img class="poster"
-src="<%= movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : '/static/media_files/image.png' %>">
-
-<button class="fav-btn"
-    data-id="<%= movie.id %>"
-    data-title="<%= movie.title %>"
-    onclick="event.stopPropagation(); addFav(this.dataset.id, this.dataset.title)">
-    <i class="fas fa-heart"></i>
-</button>
-
-<div class="movie-content">
-
-<div class="title"><%= movie.title %></div>
-
-<div class="meta">
-<span>⭐ <%= movie.vote_average %></span>
-<span><%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %></span>
+    <div class="movies-grid" id="moviesGrid">
+        <% if (typeof movies !== 'undefined' && movies.length) { %>
+            <% movies.forEach(function(movie){ %>
+                <div class="movie-card" data-id="<%= movie.id %>" data-title="<%= movie.title.replace(/"/g, '&quot;') %>">
+                    <img class="poster" src="<%= movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : '/static/media_files/image.png' %>">
+                    <button class="fav-btn" data-id="<%= movie.id %>" data-title="<%= movie.title.replace(/"/g, '&quot;') %>">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="movie-content">
+                        <div class="title"><%= movie.title %></div>
+                        <div class="meta">
+                            <span>⭐ <%= movie.vote_average %></span>
+                            <span><%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %></span>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p style="grid-column:1/-1; text-align:center;">Loading movies...</p>
+        <% } %>
+    </div>
 </div>
 
-</div>
-</div>
-
-<% }) %>
-
-</div>
-</div>
-
-<!-- TOAST -->
+<!-- TOAST & MODAL -->
 <div class="toast" id="toast"></div>
-
-<!-- MODAL -->
 <div class="modal" id="modal">
-<div class="modal-box">
-<h2>MovieMate</h2>
-<p id="modalText"></p>
-<button onclick="closeModal()">Close</button>
-</div>
+    <div class="modal-box">
+        <h2>MovieMate</h2>
+        <p id="modalText"></p>
+        <button onclick="closeModal()">Close</button>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-
 <script>
-
-/* SOCKET */
-if(typeof io !== "undefined"){
-    const socket = io();
-
-    socket.on("notification", function(msg){
-        showToast(msg);
-    });
-
-    socket.on("userActivity", function(data){
-        showToast(data.message);
-    });
-}
-
-/* ELEMENTS */
+// Store original HTML for search reset
 const grid = document.getElementById("moviesGrid");
-const searchInput = document.getElementById("searchInput");
-const originalHTML = grid.innerHTML;
+let originalHTML = grid ? grid.innerHTML : '';
 
-/* TOAST */
 function showToast(message){
     const toast = document.getElementById("toast");
     toast.textContent = message;
     toast.classList.add("show");
-
-    setTimeout(function(){
-        toast.classList.remove("show");
-    },2000);
+    setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
-/* LOGIN */
 function goLogin(){
-    window.location.href="/login";
+    window.location.href = "/login";
 }
 
-/* MODAL */
+function logout(){
+    localStorage.removeItem('token');
+    showToast('Logged out successfully');
+    updateAuthButtons();
+    setTimeout(() => window.location.href = '/login', 900);
+}
+
+function updateAuthButtons(){
+    const token = localStorage.getItem('token');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(loginBtn && logoutBtn){
+        loginBtn.style.display = token ? 'none' : 'inline-flex';
+        logoutBtn.style.display = token ? 'inline-flex' : 'none';
+    }
+}
+
 function openModal(message){
     document.getElementById("modalText").textContent = message;
     document.getElementById("modal").classList.add("show");
@@ -406,165 +367,103 @@ function closeModal(){
     document.getElementById("modal").classList.remove("show");
 }
 
-/* SEARCH */
-searchInput.addEventListener("input", async function(){
-
-    const query = this.value.trim();
-
-    if(query === ""){
-        grid.innerHTML = originalHTML;
-        return;
-    }
-
-    try{
-
-        const res = await fetch("/api/tmdb/search/movie?query=" + encodeURIComponent(query));
-        const data = await res.json();
-
-        if(!data.results || data.results.length === 0){
-            grid.innerHTML = "<h2>No Results Found</h2>";
-            return;
-        }
-
-        let html = "";
-
-ankit
-        data.results.forEach(function(movie){
-=======
-<!-- NAVBAR WITH LARGER LOGO VIDEO -->
-<nav class="navbar" id="navbar">
-    <div class="logo">
-        <video class="logo-video" src="/static/media_files/movielight.mp4" autoplay loop muted playsinline></video>
-    </div>
-    <div class="nav-links">
-        <span onclick="openModal('Home - Welcome to MovieMate!')">Home</span>
-        <span onclick="openModal('Movies - Browse our collection of popular movies.')">Movies</span>
-        <span onclick="openModal('TV Shows - Coming soon!')">TV Shows</span>
-        <button class="nav-action-btn primary" id="loginBtn" onclick="goLogin()">Login</button>
-        <button class="nav-action-btn" id="logoutBtn" onclick="logout()">Logout</button>
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search for movies...">
-        </div>
-    </div>
-</nav>
-main
-
-            let image = movie.poster_path
-            ? "https://image.tmdb.org/t/p/w500" + movie.poster_path
-            : "/static/media_files/image.png";
-
-            let year = movie.release_date
-            ? movie.release_date.split("-")[0]
-            : "N/A";
-
-            html += `
-            <div class="movie-card">
-
-                <img class="poster" src="${image}">
-
-                <button class="fav-btn"
-                onclick="addFav(${movie.id}, '${movie.title}')">
-                <i class="fas fa-heart"></i>
-                </button>
-
-                <div class="movie-content">
-                    <div class="title">${movie.title}</div>
-
-                    <div class="meta">
-                        <span>⭐ ${movie.vote_average}</span>
-                        <span>${year}</span>
-                    </div>
-                </div>
-
-            </div>
-            `;
-        });
-
-        grid.innerHTML = html;
-
-    }catch(error){
-        showToast("Search failed");
-    }
- ankit
-=======
-    function goLogin() {
-        window.location.href = "/login";
-    }
-
-    function logout() {
-        localStorage.removeItem('token');
-        showToast('Logged out successfully');
-        updateAuthButtons();
-        setTimeout(() => window.location.href = '/login', 900);
-    }
-
-    function updateAuthButtons() {
-        const token = localStorage.getItem('token');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (loginBtn && logoutBtn) {
-            loginBtn.style.display = token ? 'none' : 'inline-flex';
-            logoutBtn.style.display = token ? 'inline-flex' : 'none';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', updateAuthButtons);
-    updateAuthButtons();
-
-    
-
-   
-    
-main
-
-});
-
-/* ADD FAV */
-async function addFav(id,title){
-
+async function addFav(id, title){
     const token = localStorage.getItem("token");
-
     if(!token){
         alert("Please login first");
         return;
     }
-
     try{
-
         const res = await fetch("/api/library/add",{
             method:"POST",
             headers:{
                 "Content-Type":"application/json",
                 "Authorization":"Bearer " + token
             },
-            body:JSON.stringify({
-                movieId:id,
-                title:title,
-                media_type:"movie",
-                poster_path:""
-            })
+            body:JSON.stringify({ movieId:id, title:title, media_type:"movie", poster_path:"" })
         });
-
         const data = await res.json();
-
-        if(data.success){
-            showToast("Added " + title + " ❤️");
-        }else{
-            showToast("Failed");
-        }
-
-    }catch(error){
+        showToast(data.success ? `Added ${title} to favorites` : "Failed to add");
+    } catch(error){
         showToast("Server Error");
     }
-
 }
 
-/* READY */
-const movieCards = document.querySelectorAll(".movie-card");
-console.log("Loaded:", movieCards.length);
+// Event delegation for favorite buttons (NO INLINE ONCLICK NEEDED)
+document.addEventListener('click', function(e) {
+    const favBtn = e.target.closest('.fav-btn');
+    if (favBtn) {
+        e.stopPropagation();
+        const id = favBtn.getAttribute('data-id');
+        const title = favBtn.getAttribute('data-title');
+        if (id && title) {
+            addFav(id, title);
+        }
+    }
+});
 
+// Search functionality
+const searchInput = document.getElementById("searchInput");
+if(searchInput){
+    let debounceTimeout;
+    searchInput.addEventListener("input", async function(){
+        clearTimeout(debounceTimeout);
+        const query = this.value.trim();
+        
+        if(query === ""){
+            if(originalHTML) grid.innerHTML = originalHTML;
+            return;
+        }
+        
+        debounceTimeout = setTimeout(async () => {
+            try{
+                const res = await fetch("/api/tmdb/search/movie?query=" + encodeURIComponent(query));
+                const data = await res.json();
+                if(!data.results || data.results.length === 0){
+                    grid.innerHTML = "<h2 style='grid-column:1/-1; text-align:center;'>No Results Found</h2>";
+                    return;
+                }
+                let html = "";
+                data.results.forEach(function(movie){
+                    let image = movie.poster_path ? "https://image.tmdb.org/t/p/w500" + movie.poster_path : "/static/media_files/image.png";
+                    let year = movie.release_date ? movie.release_date.split("-")[0] : "N/A";
+                    let escapedTitle = movie.title.replace(/"/g, '&quot;');
+                    html += `
+                        <div class="movie-card">
+                            <img class="poster" src="${image}">
+                            <button class="fav-btn" data-id="${movie.id}" data-title="${escapedTitle}">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <div class="movie-content">
+                                <div class="title">${movie.title}</div>
+                                <div class="meta">
+                                    <span>⭐ ${movie.vote_average}</span>
+                                    <span>${year}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            } catch(error){
+                showToast("Search failed");
+            }
+        }, 300);
+    });
+}
+
+// Socket.io
+if(typeof io !== "undefined"){
+    const socket = io();
+    socket.on("notification", msg => showToast(msg));
+    socket.on("userActivity", data => { if(data.message) showToast(data.message); });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    updateAuthButtons();
+    if(grid && grid.innerHTML && !originalHTML) originalHTML = grid.innerHTML;
+});
 </script>
-
 </body>
 </html>
