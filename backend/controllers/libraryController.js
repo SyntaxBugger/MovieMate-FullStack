@@ -1,3 +1,6 @@
+// ================================
+// controllers/libraryController.js
+// ================================
 const Library = require('../models/Library');
 
 // 📚 GET USER LIBRARY
@@ -16,7 +19,9 @@ const addToLibrary = async (req, res, next) => {
     const { movieId, title, poster_path, media_type } = req.body;
 
     if (!movieId || !title) {
-      return res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({
+        message: "Missing required fields"
+      });
     }
 
     const exists = await Library.findOne({
@@ -25,7 +30,9 @@ const addToLibrary = async (req, res, next) => {
     });
 
     if (exists) {
-      return res.status(400).json({ message: "Already in your library" });
+      return res.status(400).json({
+        message: "Already in your library"
+      });
     }
 
     const newItem = await Library.create({
@@ -46,6 +53,34 @@ const addToLibrary = async (req, res, next) => {
   }
 };
 
+// ✏️ PATCH UPDATE LIBRARY
+const updateLibrary = async (req, res, next) => {
+  try {
+    const updated = await Library.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        userId: req.user.id
+      },
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        message: "Item not found"
+      });
+    }
+
+    res.status(200).json({
+      message: "Updated successfully",
+      item: updated
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ❌ REMOVE FROM LIBRARY
 const removeFromLibrary = async (req, res, next) => {
   try {
@@ -57,10 +92,14 @@ const removeFromLibrary = async (req, res, next) => {
     });
 
     if (!deleted) {
-      return res.status(404).json({ message: "Item not found" });
+      return res.status(404).json({
+        message: "Item not found"
+      });
     }
 
-    res.status(200).json({ message: "Item removed successfully" });
+    res.status(200).json({
+      message: "Item removed successfully"
+    });
 
   } catch (error) {
     next(error);
@@ -70,5 +109,6 @@ const removeFromLibrary = async (req, res, next) => {
 module.exports = {
   getLibrary,
   addToLibrary,
+  updateLibrary,
   removeFromLibrary
 };
