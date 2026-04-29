@@ -2,6 +2,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// ================================
+// Generate Access + Refresh Tokens
+// ================================
 const generateTokens = (user) => {
   const accessToken = jwt.sign(
     { id: user._id, email: user.email },
@@ -18,115 +21,167 @@ const generateTokens = (user) => {
   return { accessToken, refreshToken };
 };
 
+// ================================
+// Register User
+// ================================
 const register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email & password required' });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email and password required'
+      });
     }
 
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists'
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.create({
+      name,
       email,
       password: hashedPassword
     });
 
     const io = req.app.get("io");
     io.emit("userActivity", {
-      message: "New user registered "
+      message: "New user registered 🚀"
     });
 
-    res.status(201).json({ message: 'Registered successfully' });
-    
+    res.status(201).json({
+      success: true,
+      message: 'Registered successfully'
+    });
 
   } catch (error) {
-    res.status(500).json({ message: 'Registration failed', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
+    });
   }
 };
 
+// ================================
+// Login User
+// ================================
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
     }
 
     const { accessToken, refreshToken } = generateTokens(user);
 
-    // ✅ set cookie
-    res.cookie("token", accessToken, {
-      httpOnly: true,
-      secure: false,
-      maxAge: 60 * 60 * 1000
-    });
-
     user.refreshToken = refreshToken;
     await user.save();
 
-    // 🔥 emit BEFORE sending response
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000
+    });
+
     const io = req.app.get("io");
     io.emit("userActivity", {
       message: "User logged in 👤"
     });
 
-    res.json({
+    res.status(200).json({
+      success: true,
       message: 'Login successful',
       accessToken,
       refreshToken
     });
 
   } catch (error) {
-    res.status(500).json({ message: 'Login failed', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Login failed',
+      error: error.message
+    });
   }
 };
 
+// ================================
+// Refresh Access Token
+// ================================
 const refresh = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.body?.refreshToken;
 
     if (!refreshToken) {
-      return res.status(400).json({ message: 'No refresh token provided' });
+      return res.status(400).json({
+        success: false,
+        message: 'No refresh token provided'
+      });
     }
 
     const user = await User.findOne({ refreshToken });
+
     if (!user) {
-      return res.status(403).json({ message: 'Invalid refresh token' });
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid refresh token'
+      });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET
+    );
 
     const newAccessToken = jwt.sign(
-      { id: decoded.id },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
 
-    res.json({ accessToken: newAccessToken });
+    res.status(200).json({
+      success: true,
+      accessToken: newAccessToken
+    });
 
   } catch (error) {
-    res.status(403).json({ message: 'Invalid or expired refresh token' });
+    res.status(403).json({
+      success: false,
+      message: 'Invalid or expired refresh token'
+    });
   }
 };
 
-
+// ================================
+// Logout User
+// ================================
 const logout = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
-
+    const refreshToken = req.body?.refreshToken;
 
     if (refreshToken) {
       await User.findOneAndUpdate(
@@ -137,12 +192,21 @@ const logout = async (req, res) => {
 
     res.clearCookie("token");
 
-    res.json({ message: "Logged out successfully" });
+    res.status(200).json({
+      success: true,
+      message: 'Logged out successfully'
+    });
 
   } catch (error) {
-    res.status(500).json({ message: 'Logout failed', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Logout failed',
+      error: error.message
+    });
   }
 };
+
+// ================================
 module.exports = {
   register,
   login,

@@ -79,15 +79,15 @@ io.on("connection", (socket) => {
 app.get('/movies-ssr', renderMoviesSSR);
 
 app.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', { error: req.query.error || '' });
 });
 
 app.get('/register', (req, res) => {
-    res.render('register');
+    res.render('register', { error: req.query.error || '' });
 });
 
 app.get('/dashboard', (req, res) => {
-    res.render('dashboard');
+    res.render('dashboard', { user: req.session.user || null });
 });
 
 // API Routes
