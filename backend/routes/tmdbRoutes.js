@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
 const { fetchFromTMDB } = require('../controllers/tmdbController');
 
-router.use( fetchFromTMDB);
+// TMDB Route
+router.use(fetchFromTMDB);
 
 module.exports = router;
