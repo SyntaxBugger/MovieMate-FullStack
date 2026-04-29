@@ -1,469 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOVIEMATE</title>
+    <meta charset="UTF-8">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+    <title>MOVIEMATE</title>
 
-body{
-    font-family:'Inter',sans-serif;
-    background:linear-gradient(135deg,#0B1F3A,#0F2A44);
-    color:white;
-    min-height:100vh;
-}
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-/* NAVBAR */
-.navbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:1rem 2rem;
-    background:rgba(0,0,0,.45);
-    backdrop-filter:blur(12px);
-    position:sticky;
-    top:0;
-    z-index:1000;
-    flex-wrap:wrap;
-    gap:1rem;
-}
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:0.75rem;
-    font-size:1.6rem;
-    font-weight:800;
-    color:#2EC4B6;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.logo-video{
-    width:44px;
-    height:44px;
-    border-radius:12px;
-    object-fit:cover;
-    background:#0a1a2c;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(
+                135deg,
+                #0B1F3A,
+                #0F2A44
+            );
+            color: white;
+            min-height: 100vh;
+        }
 
-.nav-links{
-    display:flex;
-    align-items:center;
-    gap:1rem;
-    flex-wrap:wrap;
-}
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, .45);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-.nav-links span,
-.nav-links button{
-    background:none;
-    border:none;
-    color:white;
-    cursor:pointer;
-    font-size:.95rem;
-}
+        .logo-video {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
 
-.nav-links span:hover,
-.nav-links button:hover{
-    color:#2EC4B6;
-}
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-.nav-action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.6rem 1.3rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.08);
-    color: #E0E7FF;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
+        .nav-links span,
+        .nav-links button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
 
-.nav-action-btn:hover {
-    background: rgba(46, 196, 182, 0.14);
-    border-color: rgba(46, 196, 182, 0.4);
-    color: #A7F3D0;
-}
+        .search-box input {
+            padding: .5rem;
+            border-radius: 30px;
+            border: none;
+        }
 
-.nav-action-btn.primary {
-    background: #2EC4B6;
-    color: #0B1F3A;
-    border-color: transparent;
-}
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem;
+        }
 
-.search-box{
-    background:rgba(255,255,255,.08);
-    padding:.55rem 1rem;
-    border-radius:40px;
-    display:flex;
-    gap:8px;
-}
+        .hero h1 {
+            font-size: 3rem;
+        }
 
-.search-box input{
-    background:none;
-    border:none;
-    outline:none;
-    color:white;
-    width:170px;
-}
+        .hero span {
+            color: #2EC4B6;
+        }
 
-/* HERO */
-.hero{
-    text-align:center;
-    padding:5rem 2rem;
-    background: radial-gradient(circle at 10% 30%, rgba(46,196,182,0.15), transparent 60%);
-}
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 2rem;
+        }
 
-.hero h1{
-    font-size:3rem;
-    margin-bottom:1rem;
-}
+        .movies-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
 
-.hero span{
-    color:#2EC4B6;
-}
+        .movie-card {
+            background: rgba(255,255,255,.06);
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+        }
 
-/* GRID */
-.container{
-    max-width:1400px;
-    margin:auto;
-    padding:2rem;
-}
+        .poster {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+        }
 
-.movies-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-    gap:1.5rem;
-}
+        .movie-content {
+            padding: 1rem;
+        }
 
-/* CARD */
-.movie-card{
-    background:rgba(255,255,255,.06);
-    border-radius:14px;
-    overflow:hidden;
-    cursor:pointer;
-    transition:.3s;
-    position:relative;
-}
+        .title {
+            font-weight: 700;
+            margin-bottom: .5rem;
+        }
 
-.movie-card:hover{
-    transform:translateY(-6px);
-}
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: .85rem;
+        }
 
-.poster{
-    width:100%;
-    height:320px;
-    object-fit:cover;
-}
+        .fav-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
 
-.movie-content{
-    padding:1rem;
-}
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            padding: 1rem 1.4rem;
+            background: #2EC4B6;
+            color: black;
+            border-radius: 8px;
+            display: none;
+        }
 
-.title{
-    font-weight:700;
-    margin-bottom:.5rem;
-}
+        .toast.show {
+            display: block;
+        }
 
-.meta{
-    display:flex;
-    justify-content:space-between;
-    font-size:.85rem;
-    color:#ddd;
-}
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
 
-.fav-btn{
-    position:absolute;
-    top:12px;
-    right:12px;
-    width:38px;
-    height:38px;
-    border:none;
-    border-radius:50%;
-    background:rgba(0,0,0,.6);
-    color:white;
-    cursor:pointer;
-    transition: all 0.2s;
-}
+        .modal.show {
+            display: flex;
+        }
 
-.fav-btn:hover{
-    background:#2EC4B6;
-    color:black;
-    transform: scale(1.05);
-}
+        .modal-box {
+            background: #16293f;
+            padding: 2rem;
+            border-radius: 15px;
+        }
 
-/* TOAST */
-.toast{
-    position:fixed;
-    bottom:25px;
-    right:25px;
-    background:#2EC4B6;
-    color:black;
-    padding:1rem 1.4rem;
-    border-radius:8px;
-    transform:translateX(400px);
-    transition:.3s;
-    z-index:5000;
-    font-weight:700;
-}
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
 
-.toast.show{
-    transform:translateX(0);
-}
-
-/* MODAL */
-.modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.7);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:6000;
-}
-
-.modal.show{
-    display:flex;
-}
-
-.modal-box{
-    width:90%;
-    max-width:420px;
-    background:#16293f;
-    padding:2rem;
-    border-radius:15px;
-    text-align:center;
-}
-
-.modal-box button{
-    margin-top:1rem;
-    border:none;
-    background:#2EC4B6;
-    padding:.7rem 1.5rem;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-@media(max-width:768px){
-    .hero h1{
-        font-size:2rem;
-    }
-    .navbar{
-        flex-direction:column;
-    }
-}
-</style>
+            .navbar {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- NAVBAR WITH VIDEO LOGO -->
 <nav class="navbar">
+
     <div class="logo">
-        <video class="logo-video" src="/static/media_files/movielight.mp4" autoplay loop muted playsinline></video>
+        <video
+            class="logo-video"
+            src="/static/media_files/movielight.mp4"
+            autoplay
+            loop
+            muted
+            playsinline
+        ></video>
     </div>
+
     <div class="nav-links">
-        <span onclick="openModal('Welcome to MovieMate')">Home</span>
-        <span onclick="openModal('Browse all movies')">Movies</span>
-        <span onclick="openModal('TV Shows - Coming soon')">TV Shows</span>
-        <button class="nav-action-btn primary" id="loginBtn" onclick="goLogin()">Login</button>
-        <button class="nav-action-btn" id="logoutBtn" onclick="logout()">Logout</button>
+
+        <span onclick="openModal('Welcome to MovieMate')">
+            Home
+        </span>
+
+        <span onclick="openModal('Browse all movies')">
+            Movies
+        </span>
+
+        <span onclick="openModal('TV Shows - Coming soon')">
+            TV Shows
+        </span>
+
+        <button
+            id="loginBtn"
+            onclick="goLogin()"
+        >
+            Login
+        </button>
+
+        <button
+            id="logoutBtn"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search movie...">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search movie..."
+            >
         </div>
+
     </div>
+
 </nav>
 
-<!-- HERO -->
 <section class="hero">
-    <h1>Discover Your Next <br><span>Favourite Movie</span></h1>
+    <h1>
+        Discover Your Next
+        <br>
+        <span>Favourite Movie</span>
+    </h1>
 </section>
 
-<!-- MOVIES - EJS SECTION - USING DATA ATTRIBUTES (NO EXPRESSION ERROR) -->
 <div class="container">
-    <div class="movies-grid" id="moviesGrid">
+
+    <div
+        class="movies-grid"
+        id="moviesGrid"
+    >
+
         <% if (typeof movies !== 'undefined' && movies.length) { %>
+
             <% movies.forEach(function(movie){ %>
-                <div class="movie-card" data-id="<%= movie.id %>" data-title="<%= movie.title.replace(/"/g, '&quot;') %>">
-                    <img class="poster" src="<%= movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : '/static/media_files/image.png' %>">
-                    <button class="fav-btn" data-id="<%= movie.id %>" data-title="<%= movie.title.replace(/"/g, '&quot;') %>">
+
+                <div
+                    class="movie-card"
+                    data-id="<%= movie.id %>"
+                >
+
+                    <img
+                        class="poster"
+                        src="<%= movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : '/static/media_files/image.png' %>"
+                    >
+
+                    <button
+                        class="fav-btn"
+                        data-id="<%= movie.id %>"
+                        data-title="<%= movie.title %>"
+                    >
                         <i class="fas fa-heart"></i>
                     </button>
+
                     <div class="movie-content">
-                        <div class="title"><%= movie.title %></div>
-                        <div class="meta">
-                            <span>⭐ <%= movie.vote_average %></span>
-                            <span><%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %></span>
+
+                        <div class="title">
+                            <%= movie.title %>
                         </div>
+
+                        <div class="meta">
+                            <span>
+                                ⭐ <%= movie.vote_average %>
+                            </span>
+
+                            <span>
+                                <%= movie.release_date ? movie.release_date.split('-')[0] : 'N/A' %>
+                            </span>
+                        </div>
+
                     </div>
+
                 </div>
+
             <% }); %>
+
         <% } else { %>
-            <p style="grid-column:1/-1; text-align:center;">Loading movies...</p>
+
+            <p>Loading movies...</p>
+
         <% } %>
+
     </div>
+
 </div>
 
-<!-- TOAST & MODAL -->
-<div class="toast" id="toast"></div>
-<div class="modal" id="modal">
+<div
+    class="toast"
+    id="toast"
+></div>
+
+<div
+    class="modal"
+    id="modal"
+>
     <div class="modal-box">
+
         <h2>MovieMate</h2>
+
         <p id="modalText"></p>
-        <button onclick="closeModal()">Close</button>
+
+        <button onclick="closeModal()">
+            Close
+        </button>
+
     </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script>
-// Store original HTML for search reset
-const grid = document.getElementById("moviesGrid");
-let originalHTML = grid ? grid.innerHTML : '';
 
-function showToast(message){
-    const toast = document.getElementById("toast");
+<script>
+const grid =
+    document.getElementById("moviesGrid");
+
+let originalHTML =
+    grid ? grid.innerHTML : "";
+
+function showToast(message) {
+    const toast =
+        document.getElementById("toast");
+
     toast.textContent = message;
     toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2000);
 }
 
-function goLogin(){
+function goLogin() {
     window.location.href = "/login";
 }
 
-function logout(){
-    localStorage.removeItem('token');
-    showToast('Logged out successfully');
-    updateAuthButtons();
-    setTimeout(() => window.location.href = '/login', 900);
+function logout() {
+    localStorage.removeItem("token");
+    showToast("Logged out");
 }
 
-function updateAuthButtons(){
-    const token = localStorage.getItem('token');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    if(loginBtn && logoutBtn){
-        loginBtn.style.display = token ? 'none' : 'inline-flex';
-        logoutBtn.style.display = token ? 'inline-flex' : 'none';
-    }
+function openModal(message) {
+    document.getElementById(
+        "modalText"
+    ).textContent = message;
+
+    document.getElementById(
+        "modal"
+    ).classList.add("show");
 }
 
-function openModal(message){
-    document.getElementById("modalText").textContent = message;
-    document.getElementById("modal").classList.add("show");
+function closeModal() {
+    document.getElementById(
+        "modal"
+    ).classList.remove("show");
 }
-
-function closeModal(){
-    document.getElementById("modal").classList.remove("show");
-}
-
-async function addFav(id, title){
-    const token = localStorage.getItem("token");
-    if(!token){
-        alert("Please login first");
-        return;
-    }
-    try{
-        const res = await fetch("/api/library/add",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization":"Bearer " + token
-            },
-            body:JSON.stringify({ movieId:id, title:title, media_type:"movie", poster_path:"" })
-        });
-        const data = await res.json();
-        showToast(data.success ? `Added ${title} to favorites` : "Failed to add");
-    } catch(error){
-        showToast("Server Error");
-    }
-}
-
-// Event delegation for favorite buttons (NO INLINE ONCLICK NEEDED)
-document.addEventListener('click', function(e) {
-    const favBtn = e.target.closest('.fav-btn');
-    if (favBtn) {
-        e.stopPropagation();
-        const id = favBtn.getAttribute('data-id');
-        const title = favBtn.getAttribute('data-title');
-        if (id && title) {
-            addFav(id, title);
-        }
-    }
-});
-
-// Search functionality
-const searchInput = document.getElementById("searchInput");
-if(searchInput){
-    let debounceTimeout;
-    searchInput.addEventListener("input", async function(){
-        clearTimeout(debounceTimeout);
-        const query = this.value.trim();
-        
-        if(query === ""){
-            if(originalHTML) grid.innerHTML = originalHTML;
-            return;
-        }
-        
-        debounceTimeout = setTimeout(async () => {
-            try{
-                const res = await fetch("/api/tmdb/search/movie?query=" + encodeURIComponent(query));
-                const data = await res.json();
-                if(!data.results || data.results.length === 0){
-                    grid.innerHTML = "<h2 style='grid-column:1/-1; text-align:center;'>No Results Found</h2>";
-                    return;
-                }
-                let html = "";
-                data.results.forEach(function(movie){
-                    let image = movie.poster_path ? "https://image.tmdb.org/t/p/w500" + movie.poster_path : "/static/media_files/image.png";
-                    let year = movie.release_date ? movie.release_date.split("-")[0] : "N/A";
-                    let escapedTitle = movie.title.replace(/"/g, '&quot;');
-                    html += `
-                        <div class="movie-card">
-                            <img class="poster" src="${image}">
-                            <button class="fav-btn" data-id="${movie.id}" data-title="${escapedTitle}">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                            <div class="movie-content">
-                                <div class="title">${movie.title}</div>
-                                <div class="meta">
-                                    <span>⭐ ${movie.vote_average}</span>
-                                    <span>${year}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                grid.innerHTML = html;
-            } catch(error){
-                showToast("Search failed");
-            }
-        }, 300);
-    });
-}
-
-// Socket.io
-if(typeof io !== "undefined"){
-    const socket = io();
-    socket.on("notification", msg => showToast(msg));
-    socket.on("userActivity", data => { if(data.message) showToast(data.message); });
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    updateAuthButtons();
-    if(grid && grid.innerHTML && !originalHTML) originalHTML = grid.innerHTML;
-});
 </script>
+
 </body>
 </html>
