@@ -73,12 +73,33 @@
             border: none;
             color: white;
             cursor: pointer;
+              font-size: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .search-box input {
-            padding: .5rem;
+            padding: .5rem .85rem;
             border-radius: 30px;
             border: none;
+            font-size: 1rem;
+            outline: none;
+            min-width: 220px;
+            background: rgba(255,255,255,0.12);
+            color: white;
+        }
+
+        .search-box button.search-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.45rem 0.65rem;
         }
 
         .hero {
@@ -210,45 +231,21 @@
     <div class="nav-links">
 
         <span onclick="openModal('Welcome to MovieMate')">Home</span>
-        <button class="nav-action-btn primary" id="loginBtn" onclick="goLogin()">Login</button>
-        <button class="nav-action-btn" id="logoutBtn" onclick="logout()">Logout</button>
 
+        <button class="nav-action-btn primary" id="loginBtn" onclick="goLogin()" style="display:none;">Login</button>
+        <button class="nav-action-btn" id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
 
-        <span onclick="openModal('Welcome to MovieMate')">
-            Home
-        </span>
-
-        <span onclick="openModal('Browse all movies')">
-            Movies
-        </span>
-
-        <span onclick="openModal('TV Shows - Coming soon')">
-            TV Shows
-        </span>
-
-        <button
-            id="loginBtn"
-            onclick="goLogin()"
-        >
-            Login
-        </button>
-
-        <button
-            id="logoutBtn"
-            onclick="logout()"
-        >
-            Logout
-        </button>
-
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-
+        <form class="search-box" id="searchForm">
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
             <input
                 type="text"
                 id="searchInput"
                 placeholder="Search movie..."
+                autocomplete="off"
             >
-        </div>
+        </form>
 
     </div>
 
@@ -348,6 +345,16 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
+const socket = io();
+
+socket.on("connect", () => {
+    console.log("[SOCKET.IO] Connected to server. Socket ID:", socket.id);
+});
+
+socket.on("disconnect", () => {
+    console.log("[SOCKET.IO] Disconnected from server");
+});
+
 const grid =
     document.getElementById("moviesGrid");
 
@@ -373,6 +380,24 @@ function goLogin() {
 function logout() {
     localStorage.removeItem("token");
     showToast("Logged out");
+    updateAuthButtons();
+    setTimeout(() => {
+        window.location.href = "/login";
+    }, 700);
+}
+
+function updateAuthButtons() {
+    const token = localStorage.getItem("token");
+    const isLoggedIn = !!token;
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (loginBtn) {
+        loginBtn.style.display = isLoggedIn ? "none" : "inline-block";
+    }
+    if (logoutBtn) {
+        logoutBtn.style.display = isLoggedIn ? "inline-block" : "none";
+    }
 }
 
 function openModal(message) {
@@ -390,6 +415,78 @@ function closeModal() {
         "modal"
     ).classList.remove("show");
 }
+
+async function fetchMovies(query) {
+    const searchQuery = query ? query.trim() : "";
+    const endpoint = searchQuery
+        ? `/api/tmdb/search/movie?query=${encodeURIComponent(searchQuery)}`
+        : "/api/tmdb/movie/popular";
+
+    try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+            throw new Error(`API returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderMovies(data.results || []);
+
+        if (searchQuery && (!data.results || data.results.length === 0)) {
+            showToast("No movies found for that search.");
+        }
+    } catch (error) {
+        console.error(error);
+        showToast("Unable to load movies. Please try again.");
+    }
+}
+
+function renderMovies(movies) {
+    const moviesGrid = document.getElementById("moviesGrid");
+    if (!moviesGrid) return;
+
+    if (!movies || movies.length === 0) {
+        moviesGrid.innerHTML = '<p class="empty-message">No movies found. Try a different search.</p>';
+        return;
+    }
+
+    moviesGrid.innerHTML = movies.map((movie) => `
+        <div class="movie-card" data-id="${movie.id}">
+            <img
+                class="poster"
+                src="${movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : '/static/media_files/image.png'}"
+                alt="${movie.title || movie.name} poster"
+            >
+            <button class="fav-btn" data-id="${movie.id}" data-title="${movie.title || movie.name}">
+                <i class="fas fa-heart"></i>
+            </button>
+            <div class="movie-content">
+                <div class="title">${movie.title || movie.name || 'Untitled'}</div>
+                <div class="meta">
+                    <span>⭐ ${movie.vote_average ?? 'N/A'}</span>
+                    <span>${movie.release_date ? movie.release_date.split('-')[0] : movie.first_air_date ? movie.first_air_date.split('-')[0] : 'N/A'}</span>
+                </div>
+            </div>
+        </div>
+    `).join("");
+}
+
+const searchForm = document.getElementById("searchForm");
+const searchInput = document.getElementById("searchInput");
+
+if (searchForm && searchInput) {
+    searchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        fetchMovies(searchInput.value);
+    });
+
+    searchInput.addEventListener("input", () => {
+        if (!searchInput.value.trim()) {
+            fetchMovies();
+        }
+    });
+}
+
+updateAuthButtons();
 </script>
 
 </body>

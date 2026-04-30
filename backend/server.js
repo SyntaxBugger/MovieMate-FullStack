@@ -55,8 +55,17 @@ app.use(cookieParser());
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // Socket.IO
+let activeConnections = 0;
+
 io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
+    activeConnections++;
+    const timestamp = new Date().toLocaleTimeString();
+    
+
+    console.log(`User Connected`);
+    console.log(`Socket ID: ${socket.id}`);
+    console.log(`Time: ${timestamp}`);
+    console.log(`Active Users: ${activeConnections}`);
 
     // Broadcast when user joins
     io.emit("userActivity", {
@@ -69,7 +78,15 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        console.log("User disconnected:", socket.id);
+        activeConnections--;
+        const disconnectTime = new Date().toLocaleTimeString();
+        
+        console.log("\n========================================");
+        console.log(`[SOCKET.IO] User Disconnected`);
+        console.log(`Socket ID: ${socket.id}`);
+        console.log(`Time: ${disconnectTime}`);
+        console.log(`Active Users: ${activeConnections}`);
+        console.log("========================================\n");
     });
 });
 

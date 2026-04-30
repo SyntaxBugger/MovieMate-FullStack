@@ -266,8 +266,10 @@
         <span class="nav-link" id="navMovies">
             Browse Movies
         </span>
-
-        <span class="nav-link" id="navLogout">
+        <span class="nav-link" id="navLogin" style="display:none;">
+            Login
+        </span>
+        <span class="nav-link" id="navLogout" style="display:none;">
             Logout
         </span>
     </div>
@@ -285,16 +287,6 @@
         <h1><%= user && user.name ? 'Welcome back, ' + user.name : 'MovieMate' %></h1>
         <p class="subtitle">
             <%= user && user.name ? 'Your personal dashboard is ready. Browse movies, manage your watchlist, and enjoy your MovieMate experience.' : 'Your personal dashboard is ready. Browse movies, manage your watchlist, and experience seamless streaming — all in one refined space.' %>
-
-            <i class="fas fa-circle"></i>
-            <span>active session</span>
-        </div>
-
-        <h1>MovieMate</h1>
-
-        <p class="subtitle">
-            Your personal dashboard is ready.
-
         </p>
 
         <div class="stats-row">
@@ -326,19 +318,24 @@
             <button
                 class="action-btn secondary"
                 id="logoutBtn"
+                style="display:none;"
             >
                 <i class="fas fa-sign-out-alt"></i>
                 Logout
             </button>
+
+            <button
+                class="action-btn secondary"
+                id="loginActionBtn"
+                style="display:none;"
+                onclick="window.location.href = '/login'"
+            >
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </button>
         </div>
 
-        <p class="logout-note">
-            Logout clears session token
-        </p>
-
-        <div class="dashboard-footer">
-            MovieMate Dashboard
-        </div>
+        
     </div>
 </div>
 
@@ -362,11 +359,38 @@
         window.location.href = "/login";
     }
 
+    const navMovies = document.getElementById("navMovies");
+    const navLogout = document.getElementById("navLogout");
+    const navLogin = document.getElementById("navLogin");
+    const loginActionBtn = document.getElementById("loginActionBtn");
+
+    function updateAuthButtons() {
+        const token = localStorage.getItem("token");
+        const loggedIn = !!token;
+
+        if (logoutBtn) {
+            logoutBtn.style.display = loggedIn ? "inline-flex" : "none";
+        }
+        if (loginActionBtn) {
+            loginActionBtn.style.display = loggedIn ? "none" : "inline-flex";
+        }
+        if (navLogout) {
+            navLogout.style.display = loggedIn ? "inline-flex" : "none";
+        }
+        if (navLogin) {
+            navLogin.style.display = loggedIn ? "none" : "inline-flex";
+        }
+    }
+
     if (browseBtn) {
         browseBtn.addEventListener(
             "click",
             goMovies
         );
+    }
+
+    if (navMovies) {
+        navMovies.addEventListener("click", goMovies);
     }
 
     if (logoutBtn) {
@@ -376,9 +400,17 @@
         );
     }
 
-    if (!token) {
-        console.log("Guest mode");
+    if (navLogout) {
+        navLogout.addEventListener("click", logout);
     }
+
+    if (navLogin) {
+        navLogin.addEventListener("click", () => {
+            window.location.href = "/login";
+        });
+    }
+
+    updateAuthButtons();
 })();
 </script>
 
