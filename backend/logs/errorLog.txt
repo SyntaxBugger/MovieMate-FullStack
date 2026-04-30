@@ -30,3 +30,4 @@
 [2026-04-28T10:02:14.394Z] GET /api/auth/login - ERROR: Cannot GET /api/auth/login
 [2026-04-28T10:20:32.300Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
 [2026-04-28T10:25:30.808Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
+[2026-04-30T04:32:29.140Z] GET /api/invalid/route/123 - ERROR: Cannot GET /api/invalid/route/123
