@@ -33,3 +33,4 @@
 [2026-04-28T10:02:14.394Z] GET /api/auth/login - ERROR: Cannot GET /api/auth/login
 [2026-04-28T10:20:32.300Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
 [2026-04-28T10:25:30.808Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
+[2026-04-29T06:42:49.304Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
