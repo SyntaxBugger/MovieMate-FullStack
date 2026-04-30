@@ -482,6 +482,7 @@ GET request to /static/media_files/movielight.mp4
 [3:58:27 pm] GET /api/tmdb/movie/popular
 [3:58:31 pm] GET /movies-ssr
 [3:58:31 pm] GET /api/tmdb/movie/popular
+
 [12:12:45 pm] GET /movies-ssr
 [12:12:46 pm] GET /api/tmdb/movie/popular
 [12:12:47 pm] GET /static/media_files/movielight.mp4
@@ -530,3 +531,16 @@ GET request to /static/media_files/movielight.mp4
 [12:59:01 pm] POST /api/auth/register
 [1:00:14 pm] POST /api/auth/register
 [1:00:37 pm] POST /api/auth/login
+
+[9:42:26 am] POST /api/auth/login
+[9:45:41 am] GET /api/library
+[9:47:18 am] GET /api/library
+[9:51:03 am] POST /api/library/add
+[9:57:15 am] GET /movies-ssr
+[9:57:15 am] GET /api/tmdb/movie/popular
+[10:02:29 am] GET /api/invalid/route/123
+[10:03:27 am] OPTIONS /api/library
+[10:06:21 am] OPTIONS /api/library
+[10:10:22 am] POST /api/auth/login
+[10:11:42 am] OPTIONS /api/library
+

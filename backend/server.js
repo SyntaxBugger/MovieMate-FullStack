@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 🔥 create server + socket
+// Create server + socket
 const server = http.createServer(app);
 const io = new Server(server);
 
@@ -24,23 +24,23 @@ const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 
 // Import Routes
-const authRoutes = require('./routes/authRoutes'); 
+const authRoutes = require('./routes/authRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const tmdbRoutes = require('./routes/tmdbRoutes');
 
 // Import SSR Controller
 const { renderMoviesSSR } = require('./controllers/moviesSsrController');
 
-// ✅ Set EJS as view engine
+// Set EJS as view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ✅ Session Middleware
+// Session Middleware
 app.use(session({
     secret: 'your-secret-key-change-this-in-production',
     resave: false,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         secure: false,
         maxAge: 24 * 60 * 60 * 1000
     }
@@ -54,16 +54,16 @@ app.use(cookieParser());
 // Serve Static Files
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-// ========== SOCKET.IO ==========
+// Socket.IO
 io.on("connection", (socket) => {
-    console.log("⚡ User connected:", socket.id);
+    console.log("User connected:", socket.id);
 
-    // broadcast when user joins
+    // Broadcast when user joins
     io.emit("userActivity", {
-        message: "A user joined 🚀"
+        message: "A user joined"
     });
 
-    // custom notification event
+    // Custom notification event
     socket.on("notifyAll", (msg) => {
         io.emit("notification", msg);
     });
@@ -73,9 +73,9 @@ io.on("connection", (socket) => {
     });
 });
 
-// ========== ROUTES ==========
+// Routes
 
-// SSR Routes
+// SSR Route
 app.get('/movies-ssr', renderMoviesSSR);
 
 app.get('/login', (req, res) => {
@@ -95,7 +95,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/tmdb', tmdbRoutes);
 
-// Home route
+// Home Route
 app.get('/', (req, res) => {
     res.json({
         message: 'MovieMate API is running!',
@@ -118,10 +118,10 @@ app.use((req, res, next) => {
 // Error Handler
 app.use(errorHandler);
 
-// DB connect
+// DB Connect
 connectDB();
 
-// 🔥 IMPORTANT: use server.listen (NOT app.listen)
+// Start Server
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`SSR Page: http://localhost:${PORT}/movies-ssr`);

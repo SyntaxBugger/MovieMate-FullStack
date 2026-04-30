@@ -2,13 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
     <title>MovieMate · Dashboard</title>
-    
-    <!-- Google Fonts + Font Awesome (consistent with movies-ssr.ejs) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
     <style>
         * {
             margin: 0;
@@ -18,28 +28,27 @@
 
         body {
             min-height: 100vh;
-            font-family: 'Inter', system-ui, 'Segoe UI', 'SF Pro Text', sans-serif;
-            background: linear-gradient(135deg, #0B1F3A 0%, #0F2A44 100%);
+            font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+            background: linear-gradient(
+                135deg,
+                #0B1F3A 0%,
+                #0F2A44 100%
+            );
             color: #edf2f8;
             display: flex;
             flex-direction: column;
             position: relative;
         }
 
-        /* Subtle animated grain overlay */
         body::before {
             content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2000 2000' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+            inset: 0;
+            background-image: url("data:image/svg+xml,...");
             pointer-events: none;
             z-index: 0;
         }
 
-        /* ========== MODERN NAVBAR WITH MOVIELIGHT.MP4 LOGO ========== */
         .navbar {
             width: 100%;
             padding: 0.9rem 2rem;
@@ -49,11 +58,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
             gap: 1rem;
-            z-index: 100;
             position: sticky;
             top: 0;
+            z-index: 100;
         }
 
         .logo-area {
@@ -62,85 +70,60 @@
             gap: 0.85rem;
         }
 
-        /* Video logo container */
         .video-logo {
             width: 48px;
             height: 48px;
             border-radius: 14px;
             overflow: hidden;
             background: #0a1a2c;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(46, 196, 182, 0.35);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .video-logo:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 16px rgba(46, 196, 182, 0.3);
         }
 
         .video-logo video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
 
-        /* fallback if video fails */
         .logo-fallback {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #2EC4B6, #0EA5E9);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
             font-size: 1.6rem;
+            font-weight: bold;
             color: #07101d;
+            background: linear-gradient(
+                135deg,
+                #2EC4B6,
+                #0EA5E9
+            );
         }
 
         .brand-text {
             font-size: 1.55rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #FFFFFF 20%, #B2F0EA 50%, #2EC4B6 90%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.02em;
+            color: #ffffff;
         }
 
         .nav-links {
             display: flex;
-            align-items: center;
             gap: 1.5rem;
-            flex-wrap: wrap;
         }
 
         .nav-link {
             color: #cbd5e6;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            padding: 0.4rem 0;
-            border-bottom: 2px solid transparent;
             cursor: pointer;
         }
 
-        .nav-link:hover {
-            color: #2EC4B6;
-            border-bottom-color: #2EC4B6;
-        }
-
-        /* Dashboard main container */
         .dashboard-wrapper {
             flex: 1;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 2rem 1.5rem;
         }
 
-        /* Main dashboard card — glassmorphism + teal accents exactly like movies-ssr */
         .dashboard-card {
             width: min(580px, 100%);
             padding: 2.5rem 2rem;
@@ -148,254 +131,153 @@
             background: rgba(12, 22, 35, 0.72);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(46, 196, 182, 0.25);
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(46, 196, 182, 0.2) inset;
             text-align: center;
-            transition: transform 0.25s ease, box-shadow 0.3s ease;
             position: relative;
             z-index: 2;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(46, 196, 182, 0.45);
-            box-shadow: 0 30px 55px -12px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Glow orb */
-        .glow-orb {
-            position: absolute;
-            width: 240px;
-            height: 240px;
-            background: radial-gradient(circle, rgba(46, 196, 182, 0.2) 0%, rgba(14, 165, 233, 0) 70%);
-            border-radius: 50%;
-            filter: blur(55px);
-            z-index: -1;
-            top: -70px;
-            right: -50px;
-            pointer-events: none;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(46, 196, 182, 0.12);
-            backdrop-filter: blur(4px);
             padding: 0.3rem 1rem;
             border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            background: rgba(46, 196, 182, 0.12);
             color: #8ee4db;
-            border: 0.5px solid rgba(46, 196, 182, 0.4);
             margin-bottom: 1.25rem;
         }
 
         h1 {
             font-size: clamp(2.2rem, 5vw, 3.2rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #FFFFFF 15%, #B2F0EA 50%, #2EC4B6 90%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
             margin-bottom: 0.75rem;
-            letter-spacing: -0.02em;
         }
 
         .subtitle {
             color: #cbd5e6;
             margin-bottom: 1.8rem;
             line-height: 1.6;
-            font-size: 0.98rem;
-            font-weight: 450;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 0.8rem 1rem;
-            border-radius: 1.5rem;
-            backdrop-filter: blur(4px);
-            border: 0.5px solid rgba(255,255,255,0.05);
         }
 
-        /* Stats mini row (elegant, matches movie meta) */
         .stats-row {
             display: flex;
-            justify-content: space-between;
             gap: 1rem;
             margin: 1.5rem 0 1.8rem;
-            flex-wrap: wrap;
         }
 
         .stat-item {
-            background: rgba(20, 30, 45, 0.65);
-            backdrop-filter: blur(12px);
-            padding: 0.7rem 0.5rem;
-            border-radius: 1.5rem;
             flex: 1;
-            border: 0.5px solid rgba(46, 196, 182, 0.2);
-            transition: all 0.2s;
-        }
-
-        .stat-item:hover {
-            background: rgba(46, 196, 182, 0.12);
-            border-color: rgba(46, 196, 182, 0.4);
-            transform: translateY(-2px);
+            padding: 0.7rem;
+            border-radius: 1.5rem;
+            background: rgba(20, 30, 45, 0.65);
         }
 
         .stat-number {
             font-size: 1.6rem;
             font-weight: 800;
-            background: linear-gradient(145deg, #eef9ff, #9cc9df);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            line-height: 1.2;
         }
 
         .stat-label {
             font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
             color: #8eacc5;
-            margin-top: 0.25rem;
         }
 
-        /* Actions — buttons exactly mimicking movies-ssr */
         .actions {
             display: flex;
             gap: 1.2rem;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: 0.5rem;
         }
 
         .action-btn {
             padding: 0.85rem 2rem;
-            font-size: 0.95rem;
-            font-weight: 600;
             border-radius: 999px;
             border: none;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            font-family: inherit;
-            letter-spacing: -0.01em;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            backdrop-filter: blur(4px);
+            font-weight: 600;
         }
 
-        .action-btn.primary {
-            background: linear-gradient(105deg, #2EC4B6 0%, #14b8db 100%);
-            color: #0a121f;
-            box-shadow: 0 8px 18px -6px rgba(46, 196, 182, 0.4);
+        .primary {
+            background: linear-gradient(
+                105deg,
+                #2EC4B6,
+                #14b8db
+            );
         }
 
-        .action-btn.primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 16px 24px -10px rgba(46, 196, 182, 0.6);
-            filter: brightness(1.06);
-        }
-
-        .action-btn.secondary {
+        .secondary {
             background: rgba(20, 30, 45, 0.85);
-            backdrop-filter: blur(12px);
-            color: #f0f6fe;
-            border: 1px solid rgba(46, 196, 182, 0.5);
+            color: white;
         }
 
-        .action-btn.secondary:hover {
-            background: rgba(46, 196, 182, 0.18);
-            border-color: #2EC4B6;
-            transform: translateY(-2px);
-            color: #ffffff;
-            box-shadow: 0 12px 20px -12px rgba(46,196,182,0.3);
-        }
-
-        .action-btn:active {
-            transform: translateY(1px);
-        }
-
-        .logout-note {
-            margin-top: 1.8rem;
-            font-size: 0.8rem;
-            color: #8aa1c0;
-            background: rgba(0, 0, 0, 0.25);
-            display: inline-block;
-            padding: 0.45rem 1.2rem;
-            border-radius: 40px;
-            backdrop-filter: blur(8px);
-            border: 0.5px solid rgba(255, 255, 255, 0.06);
-        }
-
+        .logout-note,
         .dashboard-footer {
             margin-top: 1.5rem;
-            font-size: 0.7rem;
-            color: rgba(160, 190, 210, 0.5);
-            text-align: center;
         }
 
-        /* Responsive */
         @media (max-width: 650px) {
             .navbar {
                 flex-direction: column;
-                align-items: stretch;
-                padding: 1rem 1.2rem;
             }
-            .nav-links {
-                justify-content: center;
-            }
-            .dashboard-card {
-                padding: 1.8rem 1.3rem;
-            }
-            .actions {
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-            .action-btn {
-                width: 100%;
-                justify-content: center;
-            }
+
+            .actions,
             .stats-row {
                 flex-direction: column;
-                gap: 0.6rem;
             }
-        }
 
-        .action-btn i {
-            font-size: 1rem;
+            .action-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- ========== NAVBAR WITH MOVIELIGHT.MP4 VIDEO LOGO ========== -->
 <nav class="navbar">
     <div class="logo-area">
-        <div class="video-logo" id="movieLightLogo">
-            <!-- 
-                ==========================================================
-                VIDEO LOGO: Replace src with your actual movielight.mp4 path
-                Default expects: /static/media_files/movielight.mp4
-                ==========================================================
-            -->
-            <video id="logoVideo" autoplay loop muted playsinline poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%231e2a3a'/%3E%3Ctext x='14' y='30' fill='%232EC4B6' font-size='22' font-weight='bold'%3EML%3C/text%3E%3C/svg%3E">
-                <source src="/static/media_files/movielight.mp4" type="video/mp4">
-                Your browser does not support the video tag.
+        <div class="video-logo">
+            <video
+                id="logoVideo"
+                autoplay
+                loop
+                muted
+                playsinline
+            >
+                <source
+                    src="/static/media_files/movielight.mp4"
+                    type="video/mp4"
+                >
             </video>
-            <div class="logo-fallback" style="display: none;" id="logoFallback">ML</div>
+
+            <div
+                class="logo-fallback"
+                id="logoFallback"
+            >
+                ML
+            </div>
         </div>
-        <span class="brand-text">MovieMate</span>
+
+        <span class="brand-text">
+            MovieMate
+        </span>
     </div>
+
     <div class="nav-links">
-        <span class="nav-link" id="navMovies">Browse Movies</span>
-        <span class="nav-link" id="navLogout">Logout</span>
+        <span class="nav-link" id="navMovies">
+            Browse Movies
+        </span>
+
+        <span class="nav-link" id="navLogout">
+            Logout
+        </span>
     </div>
 </nav>
 
-<!-- DASHBOARD MAIN CONTENT -->
 <div class="dashboard-wrapper">
     <div class="dashboard-card">
-        <div class="glow-orb"></div>
-        
+
         <div class="status-badge">
+
             <i class="fas fa-circle" style="font-size: 0.5rem; color: #2EC4B6;"></i> 
             <span><%= user ? 'verified session' : 'active session' %></span>
         </div>
@@ -403,180 +285,102 @@
         <h1><%= user && user.name ? 'Welcome back, ' + user.name : 'MovieMate' %></h1>
         <p class="subtitle">
             <%= user && user.name ? 'Your personal dashboard is ready. Browse movies, manage your watchlist, and enjoy your MovieMate experience.' : 'Your personal dashboard is ready. Browse movies, manage your watchlist, and experience seamless streaming — all in one refined space.' %>
+
+            <i class="fas fa-circle"></i>
+            <span>active session</span>
+        </div>
+
+        <h1>MovieMate</h1>
+
+        <p class="subtitle">
+            Your personal dashboard is ready.
+
         </p>
-        
-        <!-- stats row (inspired by movie metadata) -->
+
         <div class="stats-row">
             <div class="stat-item">
                 <div class="stat-number">1.2k+</div>
-                <div class="stat-label">Curated films</div>
+                <div class="stat-label">Curated Films</div>
             </div>
+
             <div class="stat-item">
                 <div class="stat-number">48</div>
                 <div class="stat-label">Watchlist</div>
             </div>
+
             <div class="stat-item">
                 <div class="stat-number">4.8</div>
                 <div class="stat-label">Community</div>
             </div>
         </div>
-        
+
         <div class="actions">
-            <button class="action-btn primary" id="browseMoviesBtn">
-                <i class="fas fa-film"></i> Browse Movies
+            <button
+                class="action-btn primary"
+                id="browseMoviesBtn"
+            >
+                <i class="fas fa-film"></i>
+                Browse Movies
             </button>
-            <button class="action-btn secondary" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Logout
+
+            <button
+                class="action-btn secondary"
+                id="logoutBtn"
+            >
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
             </button>
         </div>
-        
+
         <p class="logout-note">
-            <i class="fas fa-lock" style="font-size: 0.7rem; margin-right: 6px;"></i> 
-            Logout clears session token & returns to login page
+            Logout clears session token
         </p>
+
         <div class="dashboard-footer">
-            MovieMate · cinematic dashboard
+            MovieMate Dashboard
         </div>
     </div>
 </div>
 
 <script>
-    (function() {
-        // ---------- VIDEO LOGO FALLBACK HANDLING ----------
-        const videoElement = document.getElementById('logoVideo');
-        const fallbackDiv = document.getElementById('logoFallback');
-        
-        if (videoElement) {
-            videoElement.addEventListener('error', function() {
-                console.warn("⚠️ Video logo not found at /static/media_files/movielight.mp4. Please check file path.");
-                if (videoElement && fallbackDiv) {
-                    videoElement.style.display = 'none';
-                    fallbackDiv.style.display = 'flex';
-                    fallbackDiv.style.alignItems = 'center';
-                    fallbackDiv.style.justifyContent = 'center';
-                    fallbackDiv.style.width = '100%';
-                    fallbackDiv.style.height = '100%';
-                    fallbackDiv.style.fontSize = '1.8rem';
-                    fallbackDiv.style.fontWeight = 'bold';
-                    fallbackDiv.style.color = '#2EC4B6';
-                    fallbackDiv.style.background = '#0f1b2a';
-                }
-            });
-            
-            // Ensure autoplay works (muted required)
-            videoElement.play().catch(e => console.log("Autoplay blocked, but video logo will work on interaction"));
-        } else if (fallbackDiv) {
-            fallbackDiv.style.display = 'flex';
-        }
-        
-        // ---------- SESSION & AUTH ----------
-        const token = localStorage.getItem("token");
-        const badgeSpan = document.querySelector('.status-badge span');
-        if (token && badgeSpan) {
-            badgeSpan.innerHTML = 'verified session';
-            const badgeParent = document.querySelector('.status-badge');
-            if (badgeParent) {
-                badgeParent.style.background = 'rgba(46, 196, 182, 0.2)';
-                badgeParent.style.borderColor = '#2EC4B6';
-            }
-        } else if (!token && badgeSpan) {
-            badgeSpan.innerHTML = 'guest mode';
-        }
-        
-        // Navigation functions
-        window.goMovies = function() {
-            const btn = document.querySelector('.action-btn.primary');
-            if (btn) {
-                btn.style.transform = 'scale(0.97)';
-                setTimeout(() => { if(btn) btn.style.transform = ''; }, 120);
-            }
-            window.location.href = "/movies-ssr";
-        };
-        
-        window.logout = function() {
-            const logoutBtnElem = document.getElementById('logoutBtn');
-            if (logoutBtnElem) {
-                logoutBtnElem.style.transform = 'scale(0.96)';
-                setTimeout(() => { if(logoutBtnElem) logoutBtnElem.style.transform = ''; }, 150);
-            }
-            localStorage.removeItem("token");
-            sessionStorage.removeItem("auth");
-            window.location.href = "/login";
-        };
-        
-        // Attach event listeners
-        const browseBtn = document.getElementById('browseMoviesBtn');
-        const logoutBtnMain = document.getElementById('logoutBtn');
-        const navMoviesLink = document.getElementById('navMovies');
-        const navLogoutLink = document.getElementById('navLogout');
-        
-        if (browseBtn) {
-            browseBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.goMovies();
-            });
-        }
-        if (logoutBtnMain) {
-            logoutBtnMain.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.logout();
-            });
-        }
-        if (navMoviesLink) {
-            navMoviesLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.goMovies();
-            });
-        }
-        if (navLogoutLink) {
-            navLogoutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.logout();
-            });
-        }
-        
-        // Keyboard shortcuts (M for movies, L for logout)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'm' || e.key === 'M') {
-                if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    window.goMovies();
-                }
-            } else if (e.key === 'l' || e.key === 'L') {
-                if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    window.logout();
-                }
-            }
-        });
-        
-        // Hover effect for stat cards
-        const statItems = document.querySelectorAll('.stat-item');
-        statItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                item.style.transform = 'translateY(-2px)';
-            });
-            item.addEventListener('mouseleave', () => {
-                item.style.transform = 'translateY(0px)';
-            });
-        });
-        
-        if (!token) {
-            console.log("MovieMate dashboard: No active session token. Please login to access full features.");
-        }
-    })();
+(function () {
+    const token = localStorage.getItem("token");
+
+    const browseBtn =
+        document.getElementById("browseMoviesBtn");
+
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+    function goMovies() {
+        window.location.href = "/movies-ssr";
+    }
+
+    function logout() {
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("auth");
+        window.location.href = "/login";
+    }
+
+    if (browseBtn) {
+        browseBtn.addEventListener(
+            "click",
+            goMovies
+        );
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener(
+            "click",
+            logout
+        );
+    }
+
+    if (!token) {
+        console.log("Guest mode");
+    }
+})();
 </script>
 
-<!-- 
-    ==========================================================
-    VIDEO LOGO SETUP INSTRUCTIONS:
-    1. Place your 'movielight.mp4' file inside:
-       /static/media_files/movielight.mp4
-    2. If your file is located elsewhere, update the <source> 
-       tag inside .video-logo (line ~180).
-    3. The video will autoplay muted & loop as an animated logo.
-    4. If the file is missing, a stylish "ML" fallback appears.
-    ==========================================================
--->
 </body>
 </html>
