@@ -31,3 +31,19 @@
 [2026-04-28T10:20:32.300Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
 [2026-04-28T10:25:30.808Z] GET /api/tmdb/movie/popular - ERROR: fetch failed
 [2026-04-30T04:32:29.140Z] GET /api/invalid/route/123 - ERROR: Cannot GET /api/invalid/route/123
+[2026-05-01T03:52:31.072Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:52:31.164Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
+[2026-05-01T03:52:51.791Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:52:53.043Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:53:14.990Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:53:15.787Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:53:15.968Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:53:16.120Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:53:16.233Z] GET //movies-ssr - ERROR: Cannot GET //movies-ssr
+[2026-05-01T03:53:40.009Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
+[2026-05-01T04:49:34.228Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-01T04:50:04.787Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-01T04:53:47.787Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-01T04:53:58.338Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-01T04:54:22.585Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-01T05:19:40.617Z] GET /api/auth/login - ERROR: Cannot GET /api/auth/login
