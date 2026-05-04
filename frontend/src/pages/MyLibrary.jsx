@@ -64,7 +64,7 @@ export default function MyLibrary({ onOpen }) {
         <div className={styles.grid}>
           {movies.map((movie) => (
             // 3. WRAPPER DIV FOR POSITIONING
-            <div key={movie.id} className={styles.cardWrapper}>
+            <div key={movie._id} className={styles.cardWrapper}>
               <MovieCard 
                 movie={movie} 
                 onClick={() => onOpen(movie)} 

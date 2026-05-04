@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./LoginPage.module.css";
-import { getData } from "./api/api"; // Import getData
+import { loginUser } from "./api/api";
 
 export default function LoginPage({ setPage }) {
   const [email, setEmail] = useState("");
@@ -11,26 +11,14 @@ export default function LoginPage({ setPage }) {
     event.preventDefault();
 
     try {
-      // 1️⃣ Check user in JSON server
-      // Note: We pass "users?..." as the endpoint string
-      const users = await getData(`users?email=${email}&password=${password}`);
-
-      if (users.length > 0) {
-        // 2️⃣ Successful Login
-        const loggedUser = users[0];
-        localStorage.setItem("user", JSON.stringify(loggedUser));
-        alert("Login Successful!");
-        
-        // Force a reload or state update to update the Navbar immediately
-        // Ideally, you'd use a context, but simply switching pages works for now
-        setPage("home"); 
-        window.location.reload(); // Quick hack to update Navbar "Login" -> "My Library"
-      } else {
-        // 3️⃣ Failed Login
-        setError("Invalid email or password");
-      }
+      const response = await loginUser(email, password);
+      localStorage.setItem("user", JSON.stringify(response.user));
+      localStorage.setItem("token", response.accessToken);
+      alert("Login Successful!");
+      setPage("home");
+      window.location.reload();
     } catch (err) {
-      setError("Something went wrong. Is the server running?");
+      setError(err.message || "Invalid email or password");
     }
   };
 

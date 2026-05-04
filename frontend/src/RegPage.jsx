@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./RegPage.module.css";
-import { getData, postData } from "./api/api";
+import { registerUser } from "./api/api";
 
 export default function RegPage({ setPage }) {
   const [fullName, setFullName] = useState("");
@@ -18,24 +18,11 @@ export default function RegPage({ setPage }) {
     }
 
     try {
-      // 1. Check if email exists
-      const existingUser = await getData(`users?email=${email}`);
-      
-      if (existingUser.length > 0) {
-        setError("Email already registered!");
-        return;
-      }
-
-      // 2. Register new user
-      const newUser = { fullName, email, password };
-      
-      // Pass endpoint "users" and the data object
-      await postData("users", newUser);
-
+      await registerUser(fullName, email, password);
       alert("Registration Successful! Please login.");
       setPage("login");
     } catch (err) {
-      setError("Registration failed. Is the server running?");
+      setError(err.message || "Registration failed. Is the server running?");
     }
   };
 

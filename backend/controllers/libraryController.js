@@ -3,9 +3,17 @@ const Library = require('../models/Library');
 // Get User Library
 const getLibrary = async (req, res, next) => {
     try {
-        const items = await Library.find({
-            userId: req.user.id
-        });
+        const query = { userId: req.user.id };
+
+        if (req.query.category) {
+            query.category = req.query.category;
+        }
+
+        if (req.query.movieId) {
+            query.movieId = Number(req.query.movieId);
+        }
+
+        const items = await Library.find(query);
 
         res.status(200).json(items);
 
@@ -21,10 +29,11 @@ const addToLibrary = async (req, res, next) => {
             movieId,
             title,
             poster_path,
-            media_type
+            media_type,
+            category
         } = req.body;
 
-        if (!movieId || !title) {
+        if (!movieId || !title || !category) {
             return res.status(400).json({
                 message: "Missing required fields"
             });
@@ -32,7 +41,8 @@ const addToLibrary = async (req, res, next) => {
 
         const exists = await Library.findOne({
             userId: req.user.id,
-            movieId
+            movieId,
+            category
         });
 
         if (exists) {
@@ -46,7 +56,8 @@ const addToLibrary = async (req, res, next) => {
             movieId,
             title,
             poster_path,
-            media_type
+            media_type,
+            category
         });
 
         res.status(201).json({

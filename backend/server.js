@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const path = require('path');
+const cors = require('cors');
 const connectDB = require('./config/db');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -50,6 +51,11 @@ app.use(session({
 app.use(express.json());
 app.use(logger);
 app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
+}));
 
 // Serve Static Files
 app.use('/static', express.static(path.join(__dirname, 'public')));

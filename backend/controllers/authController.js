@@ -113,7 +113,12 @@ const login = async (req, res) => {
             success: true,
             message: 'Login successful',
             accessToken,
-            refreshToken
+            refreshToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
         });
 
     } catch (error) {
