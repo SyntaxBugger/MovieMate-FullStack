@@ -66,52 +66,6 @@ const register = async (req, res) => {
       error: error.message
     });
   }
-
-    try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email and password required'
-            });
-        }
-
-        const existingUser = await User.findOne({ email });
-
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: 'User already exists'
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await User.create({
-            email,
-            password: hashedPassword
-        });
-
-        const io = req.app.get("io");
-
-        io.emit("userActivity", {
-            message: "New user registered"
-        });
-
-        res.status(201).json({
-            success: true,
-            message: 'Registered successfully'
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Registration failed',
-            error: error.message
-        });
-    }
-
 };
 
 // Login User

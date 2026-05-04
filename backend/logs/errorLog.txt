@@ -45,3 +45,4 @@
 [2026-04-30T12:52:51.103Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
 [2026-04-30T12:53:48.797Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
 [2026-04-30T12:56:18.326Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-01T06:47:59.637Z] GET /movie-ssr - ERROR: Cannot GET /movie-ssr
