@@ -1,4 +1,3 @@
-// In your App.jsx
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -7,25 +6,21 @@ import TvShows from "./pages/TvShows";
 import About from "./pages/About";
 import Main from "./pages/Main";
 import MyLibrary from "./pages/MyLibrary";
+import MyNotes from "./pages/MyNotes";  // ✅ ADD THIS
 import LoginPage from "./LoginPage";
 import RegPage from "./RegPage";
-import MovieDetailModal from "./components/MovieDetailModal"; // ✅ ADD THIS
+import MovieDetailModal from "./components/MovieDetailModal";
 
 export default function App() {
   const [page, setPage] = useState("home");
   const [selected, setSelected] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showModal, setShowModal] = useState(false); // ✅ ADD THIS
+  const [showModal, setShowModal] = useState(false);
 
   const openAboutPage = (item) => {
     const type = item.media_type || (item.first_air_date ? "tv" : "movie");
     setSelected({ ...item, type: type });
-    
-    // ✅ OPTION 1: Use Modal (Uncomment this, comment the About page)
     setShowModal(true);
-    
-    // ✅ OPTION 2: Use About Page (Keep this, comment the above)
-    // setPage("about");
   };
 
   const closeModal = () => {
@@ -36,7 +31,7 @@ export default function App() {
   const changePage = (newPage) => {
     setSearchQuery("");
     setPage(newPage);
-    setShowModal(false); // Close modal when changing page
+    setShowModal(false);
   };
 
   const hideNavbarFooter = page === "login" || page === "register";
@@ -54,13 +49,14 @@ export default function App() {
       {page === "movies" && <Movies onOpen={openAboutPage} />}
       {page === "tvshows" && <TvShows onOpen={openAboutPage} />}
       {page === "library" && <MyLibrary onOpen={openAboutPage} />}
+      
+      {/* ✅ MY NOTES ROUTE */}
+      {page === "mynotes" && <MyNotes onOpen={openAboutPage} />}
 
-      {/* About Page (if using Option 2) */}
       {page === "about" && selected && (
         <About selected={selected} setPage={changePage} onOpen={openAboutPage}/>
       )}
 
-      {/* ✅ MODAL - Where to Watch will appear here */}
       {showModal && selected && (
         <MovieDetailModal 
           movie={selected} 

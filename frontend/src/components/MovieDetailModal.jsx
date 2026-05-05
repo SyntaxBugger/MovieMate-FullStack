@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import WatchPlatforms from './WatchPlatforms';
+import MovieNotes from './MovieNotes';  // ✅ ADD THIS IMPORT
 import styles from './MovieDetailModal.module.css';
 import { API_TOKEN } from '../apiToken';
-import { useRecentlyViewed } from '../hooks/useRecentlyViewed'; // ✅ ADD THIS
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
+import { useMovieNotes } from '../hooks/useMovieNotes';  // ✅ ADD THIS IMPORT
 
 const MovieDetailModal = ({ movie, onClose }) => {
   const [movieDetails, setMovieDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // ✅ ADD THIS - Recently Viewed hook
   const { addToRecentlyViewed } = useRecentlyViewed();
+  const { getNote, saveNote, deleteNote } = useMovieNotes();  // ✅ ADD THIS
 
-  // ✅ ADD THIS - Track when movie is viewed
+  // Get existing note for this movie
+  const existingNote = getNote(movie?.id, movie?.media_type || 'movie');
+
   useEffect(() => {
     if (movie && movie.id) {
       console.log("✅ Modal - Saving to recently viewed:", movie.title || movie.name);
@@ -57,9 +61,31 @@ const MovieDetailModal = ({ movie, onClose }) => {
     }
   };
 
+  // ✅ Handle save note
+  const handleSaveNote = (mediaId, mediaType, noteData) => {
+    const title = movieDetails?.title || movieDetails?.name || movie.title || movie.name;
+    const posterPath = movieDetails?.poster_path || movie.poster_path;
+    
+    saveNote(
+      mediaId, 
+      mediaType, 
+      title, 
+      posterPath, 
+      noteData.rating, 
+      noteData.note, 
+      noteData.isFavorite
+    );
+  };
+
+  // ✅ Handle delete note
+  const handleDeleteNote = (mediaId, mediaType) => {
+    deleteNote(mediaId, mediaType);
+  };
+
   if (!movie) return null;
 
   const displayMovie = movieDetails || movie;
+  const mediaType = movie.media_type || 'movie';
   const title = displayMovie.title || displayMovie.name;
   const posterPath = displayMovie.poster_path;
   const rating = displayMovie.vote_average;
@@ -100,10 +126,24 @@ const MovieDetailModal = ({ movie, onClose }) => {
               </div>
             )}
 
+            {/* WHERE TO WATCH */}
             <WatchPlatforms 
-              mediaType={movie.media_type || 'movie'}
+              mediaType={mediaType}
               id={movie.id}
               title={title}
+            />
+
+            {/* ✅ MOVIE NOTES & RATINGS - ADD THIS HERE */}
+            <MovieNotes 
+              movie={{
+                id: movie.id,
+                mediaType: mediaType,
+                title: title,
+                poster_path: posterPath,
+                existingNote: existingNote,
+                onSave: handleSaveNote,
+                onDelete: handleDeleteNote
+              }}
             />
           </div>
         </div>
