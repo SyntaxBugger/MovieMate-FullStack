@@ -245,3 +245,43 @@
 
   .posterWrap img { width: 85%; }
 }
+/* Add to About.module.css */
+
+.recentlyViewedSection {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid rgba(46, 196, 182, 0.15);
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.2rem;
+  color: var(--secondary);
+  background: var(--bg-dark);
+}
+
+/* Back button */
+.backNav {
+  padding: 20px 30px 0;
+}
+
+.backBtn {
+  background: rgba(46, 196, 182, 0.15);
+  border: 1px solid var(--secondary);
+  color: var(--secondary);
+  padding: 8px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.backBtn:hover {
+  background: var(--secondary);
+  color: var(--primary);
+  transform: translateX(-3px);
+}

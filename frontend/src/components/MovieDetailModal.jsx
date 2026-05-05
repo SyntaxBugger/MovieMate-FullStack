@@ -1,10 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import WatchPlatforms from './WatchPlatforms';
 import styles from './MovieDetailModal.module.css';
+import { API_TOKEN } from '../apiToken';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'; // ✅ ADD THIS
 
 const MovieDetailModal = ({ movie, onClose }) => {
   const [movieDetails, setMovieDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // ✅ ADD THIS - Recently Viewed hook
+  const { addToRecentlyViewed } = useRecentlyViewed();
+
+  // ✅ ADD THIS - Track when movie is viewed
+  useEffect(() => {
+    if (movie && movie.id) {
+      console.log("✅ Modal - Saving to recently viewed:", movie.title || movie.name);
+      
+      addToRecentlyViewed({
+        id: movie.id,
+        title: movie.title || movie.name,
+        poster_path: movie.poster_path,
+        media_type: movie.media_type || 'movie',
+        vote_average: movie.vote_average
+      });
+    }
+  }, [movie, addToRecentlyViewed]);
 
   useEffect(() => {
     if (movie && movie.id) {
@@ -15,8 +35,19 @@ const MovieDetailModal = ({ movie, onClose }) => {
   const fetchMovieDetails = async () => {
     try {
       const mediaType = movie.media_type || 'movie';
-      const url = `https://api.themoviedb.org/3/${mediaType}/${movie.id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}`;
-      const response = await fetch(url);
+      const url = `https://api.themoviedb.org/3/${mediaType}/${movie.id}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${API_TOKEN}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`TMDB Error: ${response.status}`);
+      }
+      
       const data = await response.json();
       setMovieDetails(data);
     } catch (error) {
@@ -28,34 +59,51 @@ const MovieDetailModal = ({ movie, onClose }) => {
 
   if (!movie) return null;
 
+  const displayMovie = movieDetails || movie;
+  const title = displayMovie.title || displayMovie.name;
+  const posterPath = displayMovie.poster_path;
+  const rating = displayMovie.vote_average;
+  const releaseDate = displayMovie.release_date || displayMovie.first_air_date;
+  const overview = displayMovie.overview;
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button className={styles.closeBtn} onClick={onClose}>×</button>
         
         <div className={styles.content}>
-          {/* Movie Poster */}
           <div className={styles.poster}>
-            <img 
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-              alt={movie.title || movie.name}
-            />
+            {posterPath ? (
+              <img 
+                src={`https://image.tmdb.org/t/p/w500${posterPath}`} 
+                alt={title}
+              />
+            ) : (
+              <div className={styles.posterPlaceholder}>
+                <i className="fas fa-film"></i>
+              </div>
+            )}
           </div>
 
-          {/* Movie Info */}
           <div className={styles.info}>
-            <h2>{movie.title || movie.name}</h2>
+            <h2>{title}</h2>
             <div className={styles.meta}>
-              <span>⭐ {movie.vote_average?.toFixed(1)}/10</span>
-              <span>📅 {movie.release_date || movie.first_air_date}</span>
+              {rating && <span>⭐ {rating.toFixed(1)}/10</span>}
+              {releaseDate && <span>📅 {releaseDate}</span>}
             </div>
-            <p className={styles.overview}>{movie.overview}</p>
+            <p className={styles.overview}>{overview || "No overview available."}</p>
 
-            {/* ✅ WHERE TO WATCH - ADDED HERE */}
+            {loading && (
+              <div className={styles.loading}>
+                <div className={styles.spinner}></div>
+                <p>Loading details...</p>
+              </div>
+            )}
+
             <WatchPlatforms 
               mediaType={movie.media_type || 'movie'}
               id={movie.id}
-              title={movie.title || movie.name}
+              title={title}
             />
           </div>
         </div>
