@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react'; // <-- 1. Import useEffect
+import { useState, useEffect } from 'react';
 import styles from "./Navbar.module.css";
 import logoVideo from "../assets/movielight.mp4";
+
 export default function Navbar({ setPage, page, onSearch }) {
   
   const [query, setQuery] = useState("");
-  // 2. Add state to check if user is logged in
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // 3. Check login status when component loads or page changes
   useEffect(() => {
-    // Check if user object exists in local storage
     const user = localStorage.getItem("user"); 
-    setIsLoggedIn(!!user); // Set to true if user exists, false if null
-  }, [page]); // This re-checks every time you change pages
+    setIsLoggedIn(!!user);
+  }, [page]);
 
   const getLinkClass = (pageName) => {
     return `${styles.navLink} ${page === pageName ? styles.active : ''}`;
@@ -28,7 +26,7 @@ export default function Navbar({ setPage, page, onSearch }) {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-        e.preventDefault();
+      e.preventDefault();
       handleSearch();
     }
   };
@@ -38,11 +36,10 @@ export default function Navbar({ setPage, page, onSearch }) {
     setPage("home");
   };
 
-  // 4. Create a Logout function
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Clear user from storage
-    setIsLoggedIn(false); // Update state
-    goHome(); // Send user back home
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    goHome();
   };
 
   return (
@@ -98,13 +95,13 @@ export default function Navbar({ setPage, page, onSearch }) {
               </button>
             </li>
             
-            {/* 5. ADDED "MY LIBRARY" LINK (Only shows if logged in) */}
+            {/* MY LIBRARY LINK (Only shows if logged in) */}
             {isLoggedIn && (
               <li className={styles.navItem}>
                 <button
                   className={getLinkClass("library")}
                   onClick={() => {
-                    onSearch(""); // Clear search
+                    onSearch("");
                     setPage("library");
                   }}
                 >
@@ -112,7 +109,21 @@ export default function Navbar({ setPage, page, onSearch }) {
                 </button>
               </li>
             )}
-            
+
+            {/* ✅ NEW: MY NOTES LINK (Only shows if logged in) */}
+            {isLoggedIn && (
+              <li className={styles.navItem}>
+                <button
+                  className={getLinkClass("mynotes")}
+                  onClick={() => {
+                    onSearch("");
+                    setPage("mynotes");
+                  }}
+                >
+                  <i className="fas fa-pen"></i> My Notes
+                </button>
+              </li>
+            )}
           </ul>
 
           {/* RIGHT SIDE - Search + Login/Logout */}
@@ -132,7 +143,6 @@ export default function Navbar({ setPage, page, onSearch }) {
               />
             </div>
             
-            {/* 6. FIXED: Show "Logout" or "Login" based on state */}
             {isLoggedIn ? (
               <button className={styles.btn} onClick={handleLogout}>
                 Logout
@@ -142,7 +152,6 @@ export default function Navbar({ setPage, page, onSearch }) {
                 Login
               </button>
             )}
-
           </div>
         </nav>
       </div>

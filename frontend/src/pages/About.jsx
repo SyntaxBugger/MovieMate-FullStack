@@ -5,6 +5,8 @@ import { addToFavorites, addToWatchlist, addToHistory } from "../api/api";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import RecentlyViewed from "../components/RecentlyViewed";
 import WatchPlatforms from "../components/WatchPlatforms";
+import MovieNotes from "../components/MovieNotes";  // ✅ ADD THIS
+import { useMovieNotes } from "../hooks/useMovieNotes";  // ✅ ADD THIS
 
 export default function About({ selected, setPage, onOpen }) {
   const [data, setData] = useState(null);
@@ -14,12 +16,17 @@ export default function About({ selected, setPage, onOpen }) {
   
   const { addToRecentlyViewed, recentItems, clearRecentlyViewed, removeFromRecentlyViewed } = useRecentlyViewed();
   
+  // ✅ ADD THIS - Movie Notes hook
+  const { getNote, saveNote, deleteNote } = useMovieNotes();
+  
   const id = selected?.id;
   const type = selected?.type ?? "movie";
 
-  // ✅ Add to Recently Viewed when movie/show loads - FIXED VERSION
+  // ✅ Get existing note for this movie
+  const existingNote = getNote(id, type);
+
+  // ✅ Add to Recently Viewed when movie/show loads
   useEffect(() => {
-    // Make sure we have complete data before saving
     if (id && data && data.id && (data.title || data.name)) {
       console.log("✅ Saving to recently viewed:", data.title || data.name);
       
@@ -103,6 +110,24 @@ export default function About({ selected, setPage, onOpen }) {
     window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank");
   };
 
+  // ✅ Handle save note
+  const handleSaveNote = (mediaId, mediaType, noteData) => {
+    saveNote(
+      mediaId, 
+      mediaType, 
+      title, 
+      data?.poster_path, 
+      noteData.rating, 
+      noteData.note, 
+      noteData.isFavorite
+    );
+  };
+
+  // ✅ Handle delete note
+  const handleDeleteNote = (mediaId, mediaType) => {
+    deleteNote(mediaId, mediaType);
+  };
+
   if (!id) return null;
   if (loading) return <div className={styles.loading}>Loading details…</div>;
 
@@ -155,6 +180,19 @@ export default function About({ selected, setPage, onOpen }) {
             mediaType={type}
             id={id}
             title={title}
+          />
+
+          {/* ✅ ADD MOVIE NOTES COMPONENT */}
+          <MovieNotes 
+            movie={{
+              id: id,
+              mediaType: type,
+              title: title,
+              poster_path: data?.poster_path,
+              existingNote: existingNote,
+              onSave: handleSaveNote,
+              onDelete: handleDeleteNote
+            }}
           />
         </div>
       </header>
