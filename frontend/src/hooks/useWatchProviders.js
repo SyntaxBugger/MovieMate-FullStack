@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { platformApi } from '../api/apis/platformApi';
-import { groupProviders, hasAnyProviders } from '../src/utils/platformHelpers';
+import { groupProviders, hasAnyProviders } from '../utils/platformHelpers';
 
 export const useWatchProviders = (mediaType, id, defaultCountry = 'IN') => {
   const [providers, setProviders] = useState({ flatrate: [], rent: [], buy: [], ads: [] });

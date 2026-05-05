@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PlatformCard from './PlatformCard';
 import styles from './WatchPlatforms.module.css';
+import { API_TOKEN } from '../apiToken';
 
 // Country list with flags
 const countryList = {
@@ -11,6 +12,29 @@ const countryList = {
   'AU': { name: 'Australia', flag: '🇦🇺', code: 'AU' }
 };
 
+// Helper functions
+const getCountryInfo = (code) => {
+  return countryList[code] || { name: code, flag: '🌍', code };
+};
+
+const groupProviders = (providers) => {
+  if (!providers) return { flatrate: [], rent: [], buy: [], ads: [] };
+  return {
+    flatrate: providers.flatrate || [],
+    rent: providers.rent || [],
+    buy: providers.buy || [],
+    ads: providers.ads || []
+  };
+};
+
+const hasAnyProviders = (providers) => {
+  if (!providers) return false;
+  return (providers.flatrate?.length > 0 || 
+          providers.rent?.length > 0 || 
+          providers.buy?.length > 0 || 
+          providers.ads?.length > 0);
+};
+
 const WatchPlatforms = ({ mediaType, id, title }) => {
   const [providers, setProviders] = useState({ flatrate: [], rent: [], buy: [], ads: [] });
   const [loading, setLoading] = useState(true);
@@ -18,61 +42,7 @@ const WatchPlatforms = ({ mediaType, id, title }) => {
   const [selectedCountry, setSelectedCountry] = useState('IN');
   const [availableCountries, setAvailableCountries] = useState(['IN', 'US', 'GB', 'CA', 'AU']);
 
-  const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-
-  // Hardcoded data for popular movies (fallback)
-  const getFallbackProviders = (movieId, country) => {
-    const fallbackData = {
-      // Avengers: Endgame (ID: 299534)
-      299534: {
-        IN: {
-          flatrate: [
-            { provider_id: 218, provider_name: "Disney+ Hotstar", logo_path: "/7rwgBjw8bTdVj5S8O5pjhZQmMlX.png" },
-            { provider_id: 8, provider_name: "Netflix", logo_path: "/wwemzKWzjKYJFfCeiB57q3r4Bcm.png" }
-          ],
-          rent: [
-            { provider_id: 3, provider_name: "Google Play", logo_path: "/8zV2LPWfXZm4iLIqHu3QXUywBBC.png" },
-            { provider_id: 2, provider_name: "Apple TV", logo_path: "/gQZJqB1q1q1q1q1q1q1q1q1q.png" }
-          ]
-        },
-        US: {
-          flatrate: [
-            { provider_id: 8, provider_name: "Netflix", logo_path: "/wwemzKWzjKYJFfCeiB57q3r4Bcm.png" },
-            { provider_id: 9, provider_name: "Amazon Prime Video", logo_path: "/8zV2LPWfXZm4iLIqHu3QXUywBBC.png" },
-            { provider_id: 386, provider_name: "Disney+", logo_path: "/7rwgBjw8bTdVj5S8O5pjhZQmMlX.png" }
-          ]
-        }
-      },
-      // Inception (ID: 27205)
-      27205: {
-        IN: {
-          flatrate: [
-            { provider_id: 8, provider_name: "Netflix", logo_path: "/wwemzKWzjKYJFfCeiB57q3r4Bcm.png" },
-            { provider_id: 9, provider_name: "Prime Video", logo_path: "/8zV2LPWfXZm4iLIqHu3QXUywBBC.png" }
-          ],
-          rent: [
-            { provider_id: 3, provider_name: "Google Play", logo_path: "/8zV2LPWfXZm4iLIqHu3QXUywBBC.png" },
-            { provider_id: 2, provider_name: "Apple TV", logo_path: "/gQZJqB1q1q1q1q1q1q1q1q1q.png" }
-          ]
-        }
-      },
-      // Interstellar (ID: 157336)
-      157336: {
-        IN: {
-          flatrate: [
-            { provider_id: 9, provider_name: "Prime Video", logo_path: "/8zV2LPWfXZm4iLIqHu3QXUywBBC.png" }
-          ],
-          rent: [
-            { provider_id: 3, provider_name: "Google Play", logo_path: "/8zV2LPWfXZm4iLIqHu3QXUywBBC.png" },
-            { provider_id: 2, provider_name: "Apple TV", logo_path: "/gQZJqB1q1q1q1q1q1q1q1q1q.png" }
-          ]
-        }
-      }
-    };
-
-    return fallbackData[movieId]?.[country] || null;
-  };
-
+  // Fetch watch providers using Bearer token (same as tmdb.js)
   const fetchWatchProviders = async () => {
     if (!id) return;
     
@@ -80,52 +50,34 @@ const WatchPlatforms = ({ mediaType, id, title }) => {
     setError(null);
     
     try {
-      // First try TMDB API
-      const url = `https://api.themoviedb.org/3/${mediaType}/${id}/watch/providers?api_key=${TMDB_API_KEY}`;
-      const response = await fetch(url);
+      const url = `https://api.themoviedb.org/3/${mediaType}/${id}/watch/providers`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${API_TOKEN}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`TMDB Error: ${response.status}`);
+      }
+      
       const data = await response.json();
       
       if (data.results && data.results[selectedCountry]) {
         const countryData = data.results[selectedCountry];
-        setProviders({
-          flatrate: countryData.flatrate || [],
-          rent: countryData.rent || [],
-          buy: countryData.buy || [],
-          ads: countryData.ads || []
-        });
+        setProviders(groupProviders(countryData));
         
         // Update available countries
         const countries = Object.keys(data.results);
         if (countries.length > 0) setAvailableCountries(countries);
       } else {
-        // If no data from API, try fallback data
-        const fallback = getFallbackProviders(id, selectedCountry);
-        if (fallback) {
-          setProviders({
-            flatrate: fallback.flatrate || [],
-            rent: fallback.rent || [],
-            buy: fallback.buy || [],
-            ads: fallback.ads || []
-          });
-          console.log('Using fallback data for movie:', title);
-        } else {
-          setProviders({ flatrate: [], rent: [], buy: [], ads: [] });
-        }
+        setProviders({ flatrate: [], rent: [], buy: [], ads: [] });
       }
     } catch (err) {
       console.error('Error fetching watch providers:', err);
-      // Try fallback on error
-      const fallback = getFallbackProviders(id, selectedCountry);
-      if (fallback) {
-        setProviders({
-          flatrate: fallback.flatrate || [],
-          rent: fallback.rent || [],
-          buy: fallback.buy || [],
-          ads: fallback.ads || []
-        });
-      } else {
-        setError('Failed to load streaming platforms');
-      }
+      setError('Failed to load streaming platforms');
     } finally {
       setLoading(false);
     }
@@ -139,10 +91,10 @@ const WatchPlatforms = ({ mediaType, id, title }) => {
     setSelectedCountry(country);
   };
 
+  const hasProviders = hasAnyProviders(providers);
   const hasSubscription = providers.flatrate?.length > 0;
   const hasRent = providers.rent?.length > 0;
   const hasBuy = providers.buy?.length > 0;
-  const hasProviders = hasSubscription || hasRent || hasBuy;
 
   if (loading) {
     return (
@@ -155,7 +107,7 @@ const WatchPlatforms = ({ mediaType, id, title }) => {
     );
   }
 
-  if (error && !hasProviders) {
+  if (error) {
     return (
       <div className={styles.container}>
         <div className={styles.error}>
@@ -172,7 +124,7 @@ const WatchPlatforms = ({ mediaType, id, title }) => {
         <div className={styles.noProviders}>
           <i className="fas fa-film"></i>
           <h4>No streaming information available</h4>
-          <p>"{title}" is not available for streaming in {countryList[selectedCountry]?.name || selectedCountry}</p>
+          <p>"{title}" is not available for streaming in {getCountryInfo(selectedCountry).name}</p>
           <small>Try changing the region below</small>
         </div>
       </div>
@@ -197,7 +149,7 @@ const WatchPlatforms = ({ mediaType, id, title }) => {
             >
               {availableCountries.map(country => (
                 <option key={country} value={country}>
-                  {countryList[country]?.flag || '🌍'} {countryList[country]?.name || country}
+                  {getCountryInfo(country).flag} {getCountryInfo(country).name}
                 </option>
               ))}
             </select>

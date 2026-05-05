@@ -2,22 +2,43 @@ import { useEffect, useState } from "react";
 import styles from "./About.module.css";
 import { getMovieDetails, getTvDetails, getCredits, getRecommendations, IMG } from "../api/tmdb";
 import { addToFavorites, addToWatchlist, addToHistory } from "../api/api";
+import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
+import RecentlyViewed from "../components/RecentlyViewed";
+import WatchPlatforms from "../components/WatchPlatforms";
 
-// 1. Accept 'onOpen' as a prop
 export default function About({ selected, setPage, onOpen }) {
   const [data, setData] = useState(null);
   const [credits, setCredits] = useState({ cast: [], crew: [] });
   const [recs, setRecs] = useState([]);
   const [loading, setLoading] = useState(false);
   
+  const { addToRecentlyViewed, recentItems, clearRecentlyViewed, removeFromRecentlyViewed } = useRecentlyViewed();
+  
   const id = selected?.id;
   const type = selected?.type ?? "movie";
+
+  // ✅ Add to Recently Viewed when movie/show loads - FIXED VERSION
+  useEffect(() => {
+    // Make sure we have complete data before saving
+    if (id && data && data.id && (data.title || data.name)) {
+      console.log("✅ Saving to recently viewed:", data.title || data.name);
+      
+      addToRecentlyViewed({
+        id: data.id,
+        title: data.title || data.name,
+        poster_path: data.poster_path,
+        media_type: type,
+        vote_average: data.vote_average
+      });
+    } else {
+      console.log("⏳ Waiting for data to load...", { id, hasData: !!data });
+    }
+  }, [id, data, type, addToRecentlyViewed]);
 
   useEffect(() => {
     if (!id) return;
     let mounted = true;
     setLoading(true);
-    // Scroll to top when ID changes (so you don't start at the bottom of the new page)
     window.scrollTo(0, 0);
 
     async function fetchAll() {
@@ -78,7 +99,6 @@ export default function About({ selected, setPage, onOpen }) {
   const handleTrailer = () => {
     if (!data) return;
     addToHistory(getMovieObject());
-    // Simple YouTube search
     const query = `${data.title || data.name} trailer`;
     window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank");
   };
@@ -130,6 +150,12 @@ export default function About({ selected, setPage, onOpen }) {
             <h2>Overview</h2>
             <p>{overview}</p>
           </section>
+
+          <WatchPlatforms 
+            mediaType={type}
+            id={id}
+            title={title}
+          />
         </div>
       </header>
 
@@ -183,12 +209,11 @@ export default function About({ selected, setPage, onOpen }) {
           <h2 className={styles.sectionTitle}>Recommended</h2>
           <div className={styles.showGrid}>
             {recs.slice(0,6).map(r => (
-              // 2. Added onClick event to switch pages
               <article 
                 className={styles.showCard} 
                 key={r.id} 
-                onClick={() => onOpen({ ...r, media_type: type })} // Pass current type (movie/tv)
-                style={{ cursor: "pointer" }} // Make it look clickable
+                onClick={() => onOpen({ ...r, media_type: type, type: type })}
+                style={{ cursor: "pointer" }}
               >
                 <div className={styles.recImgWrap}>
                   <img src={r.poster_path ? `${IMG}${r.poster_path}` : "/placeholder.png"} alt={r.title ?? r.name} />
@@ -200,6 +225,23 @@ export default function About({ selected, setPage, onOpen }) {
             ))}
           </div>
         </section>
+
+        {/* Recently Viewed Section */}
+        {recentItems.length > 1 && (
+          <div className={styles.recentlyViewedSection}>
+            <RecentlyViewed 
+              items={recentItems.filter(item => item.id !== id)}
+              onItemClick={(item) => {
+                const mediaType = item.media_type || 'movie';
+                onOpen({ ...item, media_type: mediaType, type: mediaType });
+                window.scrollTo(0, 0);
+              }}
+              onRemove={removeFromRecentlyViewed}
+              onClearAll={clearRecentlyViewed}
+              title="Recently Viewed"
+            />
+          </div>
+        )}
       </main>
     </div>
   );

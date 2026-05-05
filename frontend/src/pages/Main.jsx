@@ -3,13 +3,28 @@ import LoadingScreen from '../components/LoadingScreen';
 import HeroBanner from '../components/HeroBanner'; 
 import SpotlightCarousel from '../components/SpotlightCarousel'; 
 import MovieRow from '../components/MovieRow';
+import RecentlyViewed from '../components/RecentlyViewed';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 
-// This component just *receives* searchQuery
-const HomePageContent = ({ onOpen, searchQuery }) => {
+// Home Page Content Component
+const HomePageContent = ({ onOpen, searchQuery, recentItems, onRemove, onClearAll }) => {
+  console.log('🏠 HomePage - recentItems:', recentItems.length);
+  
   return (
     <>
       <HeroBanner />
       <SpotlightCarousel onOpen={onOpen} /> 
+      
+      {/* Recently Viewed - Shows first when not searching */}
+      {!searchQuery && recentItems.length > 0 && (
+        <RecentlyViewed 
+          items={recentItems}
+          onItemClick={onOpen}
+          onRemove={onRemove}
+          onClearAll={onClearAll}
+          title="Continue Watching"
+        />
+      )}
       
       {searchQuery ? (
         <MovieRow 
@@ -21,49 +36,67 @@ const HomePageContent = ({ onOpen, searchQuery }) => {
         />
       ) : (
         <>
-          <MovieRow title=" Trending Now" path="/trending/movie/week" onOpen={onOpen} />
-          <MovieRow title=" Top Rated Movies" path="/movie/top_rated" onOpen={onOpen} />
-          <MovieRow title=" Popular TV Shows" path="/tv/popular" onOpen={onOpen} />
-          <MovieRow title=" Coming Soon" path="/movie/upcoming" onOpen={onOpen} />
+          <MovieRow title="🔥 Trending Now" path="/trending/movie/week" onOpen={onOpen} />
+          <MovieRow title="⭐ Top Rated Movies" path="/movie/top_rated" onOpen={onOpen} />
+          <MovieRow title="📺 Popular TV Shows" path="/tv/popular" onOpen={onOpen} />
+          <MovieRow title="🚀 Coming Soon" path="/movie/upcoming" onOpen={onOpen} />
         </>
       )}
     </>
   );
 };
 
-// This component just *receives* searchQuery
+// Main Component
 export default function Main({ onOpen, searchQuery }) {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  
+  const { recentItems, removeFromRecentlyViewed, clearRecentlyViewed } = useRecentlyViewed();
+
+  console.log('🔍 Main - recentItems:', recentItems.length);
 
   useEffect(() => {
-    // ... loading logic ...
     const totalDuration = 3000;
     const intervalTime = 30;
     const increment = (intervalTime / totalDuration) * 100;
+    
+    let progressInterval;
     const updateProgress = () => {
       setProgress((prevProgress) => {
         const newProgress = prevProgress + increment;
         if (newProgress >= 100) {
           clearInterval(progressInterval);
-          setTimeout(() => setIsLoading(false), 500); 
+          setTimeout(() => setIsLoading(false), 500);
           return 100;
         }
         return newProgress;
       });
     };
-    const progressInterval = setInterval(updateProgress, intervalTime);
+    
+    progressInterval = setInterval(updateProgress, intervalTime);
+    
     return () => {
       clearInterval(progressInterval);
     };
   }, []);
+
+  const handleItemClick = (item) => {
+    const type = item.media_type || 'movie';
+    onOpen({ ...item, type, media_type: type });
+  };
 
   return (
     <main>
       {isLoading ? (
         <LoadingScreen progress={Math.round(progress)} />
       ) : (
-        <HomePageContent onOpen={onOpen} searchQuery={searchQuery} />
+        <HomePageContent 
+          onOpen={handleItemClick}
+          searchQuery={searchQuery}
+          recentItems={recentItems}
+          onRemove={removeFromRecentlyViewed}
+          onClearAll={clearRecentlyViewed}
+        />
       )}
     </main>
   );

@@ -1,1 +1,6 @@
-export const API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2OGY2MzUxZGU0OWY1Y2JkZmM4NDAwZGZmNjYwZDVlYiIsIm5iZiI6MTc2MTM3MDc1Mi43MzUwMDAxLCJzdWIiOiI2OGZjNjI4MDRhMjMyMTJmMjljY2Q2ZjEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.KtYC0tX34zFbzZWRFZhuQEnMUagO57O1E89d7-87gLk";
+// Read token from .env file
+export const API_TOKEN = import.meta.env.VITE_TMDB_TOKEN;
+
+// Debug log (remove after testing)
+console.log('🔑 API Token loaded:', API_TOKEN ? '✅ Yes' : '❌ No');
+console.log('🔑 Token length:', API_TOKEN?.length || 0);
