@@ -279,3 +279,27 @@
   font-weight: bold;
   font-size: 0.9rem;
 }
+.noteSection {
+  display: block !important;
+  margin-top: 20px;
+}
+.noteTextarea {
+  width: 100%;
+  padding: 12px;
+  background: #172a45;
+  border: 1px solid #2ec4b6;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.noteTextarea:focus {
+  outline: none;
+  border-color: #4fd1c5;
+  box-shadow: 0 0 5px rgba(46, 196, 182, 0.5);
+}
+
+.noteTextarea::placeholder {
+  color: #8892b0;
+}

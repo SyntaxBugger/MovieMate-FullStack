@@ -6,7 +6,8 @@ import TvShows from "./pages/TvShows";
 import About from "./pages/About";
 import Main from "./pages/Main";
 import MyLibrary from "./pages/MyLibrary";
-import MyNotes from "./pages/MyNotes";  // ✅ ADD THIS
+import MyNotes from "./pages/MyNotes";
+import Analytics from "./pages/Analytics";  // ✅ ADD THIS
 import LoginPage from "./LoginPage";
 import RegPage from "./RegPage";
 import MovieDetailModal from "./components/MovieDetailModal";
@@ -50,8 +51,11 @@ export default function App() {
       {page === "tvshows" && <TvShows onOpen={openAboutPage} />}
       {page === "library" && <MyLibrary onOpen={openAboutPage} />}
       
-      {/* ✅ MY NOTES ROUTE */}
+      {/* MY NOTES ROUTE */}
       {page === "mynotes" && <MyNotes onOpen={openAboutPage} />}
+
+      {/* ✅ ANALYTICS ROUTE */}
+      {page === "analytics" && <Analytics />}
 
       {page === "about" && selected && (
         <About selected={selected} setPage={changePage} onOpen={openAboutPage}/>

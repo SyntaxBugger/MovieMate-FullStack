@@ -110,7 +110,7 @@ export default function Navbar({ setPage, page, onSearch }) {
               </li>
             )}
 
-            {/* ✅ NEW: MY NOTES LINK (Only shows if logged in) */}
+            {/* MY NOTES LINK (Only shows if logged in) */}
             {isLoggedIn && (
               <li className={styles.navItem}>
                 <button
@@ -121,6 +121,21 @@ export default function Navbar({ setPage, page, onSearch }) {
                   }}
                 >
                   <i className="fas fa-pen"></i> My Notes
+                </button>
+              </li>
+            )}
+
+            {/* ✅ ANALYTICS LINK (Only shows if logged in) */}
+            {isLoggedIn && (
+              <li className={styles.navItem}>
+                <button
+                  className={getLinkClass("analytics")}
+                  onClick={() => {
+                    onSearch("");
+                    setPage("analytics");
+                  }}
+                >
+                  <i className="fas fa-chart-line"></i> Analytics
                 </button>
               </li>
             )}

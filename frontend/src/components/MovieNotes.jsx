@@ -2,40 +2,71 @@ import React, { useState, useEffect } from 'react';
 import RatingStars from './RatingStars';
 import styles from './MovieNotes.module.css';
 
-const MovieNotes = ({ movie, onNoteSaved }) => {
+const MovieNotes = ({ movie }) => {
   const [rating, setRating] = useState(null);
   const [noteText, setNoteText] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('');
 
-  // Load existing note when movie changes
+  // Load existing note when movie changes - FIXED: Added proper dependencies
   useEffect(() => {
-    if (movie && movie.existingNote) {
+    if (!movie) return;
+    
+    console.log('Loading note for movie:', movie.id);
+    
+    if (movie.existingNote) {
       setRating(movie.existingNote.rating);
       setNoteText(movie.existingNote.note || '');
       setIsFavorite(movie.existingNote.isFavorite || false);
-      setIsEditing(!!(movie.existingNote.note || movie.existingNote.rating));
+      setShowEditor(!!(movie.existingNote.note || movie.existingNote.rating));
     } else {
       setRating(null);
       setNoteText('');
       setIsFavorite(false);
-      setIsEditing(false);
+      setShowEditor(false);
     }
-  }, [movie]);
+  }, [movie?.id]); // Only run when movie ID changes, not on every render
+
+  // Save to localStorage
+  const saveToLocalStorage = (newRating, newNote, newFavorite) => {
+    try {
+      const existingNotes = JSON.parse(localStorage.getItem('moviemate_movie_notes') || '[]');
+      
+      const filteredNotes = existingNotes.filter(
+        n => !(n.mediaId === movie.id && n.mediaType === movie.mediaType)
+      );
+      
+      const newNoteObj = {
+        mediaId: movie.id,
+        mediaType: movie.mediaType,
+        title: movie.title,
+        poster_path: movie.poster_path,
+        rating: newRating,
+        note: newNote,
+        isFavorite: newFavorite,
+        updatedAt: new Date().toISOString()
+      };
+      
+      const updatedNotes = [newNoteObj, ...filteredNotes];
+      localStorage.setItem('moviemate_movie_notes', JSON.stringify(updatedNotes));
+      
+      setSaveStatus('✓ Saved!');
+      setTimeout(() => setSaveStatus(''), 2000);
+      
+      if (movie.onSave) {
+        movie.onSave(movie.id, movie.mediaType, { rating: newRating, note: newNote, isFavorite: newFavorite });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setSaveStatus('❌ Failed');
+      setTimeout(() => setSaveStatus(''), 2000);
+    }
+  };
 
   const handleRatingChange = (newRating) => {
     setRating(newRating);
-    // Auto-save when rating is clicked
-    if (movie.onSave) {
-      movie.onSave(movie.id, movie.mediaType, { 
-        rating: newRating, 
-        note: noteText, 
-        isFavorite 
-      });
-    }
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
+    saveToLocalStorage(newRating, noteText, isFavorite);
   };
 
   const handleNoteChange = (e) => {
@@ -43,50 +74,27 @@ const MovieNotes = ({ movie, onNoteSaved }) => {
   };
 
   const handleSaveNote = () => {
-    if (movie.onSave) {
-      movie.onSave(movie.id, movie.mediaType, { 
-        rating, 
-        note: noteText, 
-        isFavorite 
-      });
+    if (!noteText.trim() && !rating) {
+      alert('Please add a rating or write a note');
+      return;
     }
-    setIsEditing(true);
-    setShowSuccess(true);
-    if (onNoteSaved) onNoteSaved();
-    
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 2000);
+    saveToLocalStorage(rating, noteText, isFavorite);
   };
 
   const handleDeleteNote = () => {
-    setRating(null);
-    setNoteText('');
-    setIsFavorite(false);
-    setIsEditing(false);
-    
-    if (movie.onDelete) {
-      movie.onDelete(movie.id, movie.mediaType);
+    if (window.confirm('Delete this note?')) {
+      setRating(null);
+      setNoteText('');
+      setIsFavorite(false);
+      setShowEditor(false);
+      saveToLocalStorage(null, '', false);
     }
-    
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 2000);
   };
 
   const handleToggleFavorite = () => {
     const newFavorite = !isFavorite;
     setIsFavorite(newFavorite);
-    if (movie.onSave) {
-      movie.onSave(movie.id, movie.mediaType, { 
-        rating, 
-        note: noteText, 
-        isFavorite: newFavorite 
-      });
-    }
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
+    saveToLocalStorage(rating, noteText, newFavorite);
   };
 
   return (
@@ -96,13 +104,13 @@ const MovieNotes = ({ movie, onNoteSaved }) => {
           <i className="fas fa-pen"></i>
           My Notes & Rating
         </h3>
-        {!isEditing && !noteText && !rating && (
-          <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
+        {!showEditor && !noteText && !rating && (
+          <button className={styles.editBtn} onClick={() => setShowEditor(true)}>
             <i className="fas fa-plus"></i> Add Note
           </button>
         )}
-        {(isEditing || noteText || rating) && (
-          <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
+        {(showEditor || noteText || rating) && !showEditor && (
+          <button className={styles.editBtn} onClick={() => setShowEditor(true)}>
             <i className="fas fa-edit"></i> Edit Note
           </button>
         )}
@@ -112,7 +120,7 @@ const MovieNotes = ({ movie, onNoteSaved }) => {
       <div className={styles.ratingSection}>
         <div className={styles.ratingLabel}>
           <i className="fas fa-star"></i>
-          <span>Your Rating</span>
+          <span>Your Rating (Click on stars)</span>
         </div>
         <RatingStars 
           rating={rating} 
@@ -128,13 +136,13 @@ const MovieNotes = ({ movie, onNoteSaved }) => {
           className={`${styles.favoriteBtn} ${isFavorite ? styles.active : ''}`}
           onClick={handleToggleFavorite}
         >
-          <i className={`fas ${isFavorite ? 'fa-heart' : 'fa-heart'}`}></i>
-          {isFavorite ? 'Added to Favorites' : 'Add to Favorites'}
+          <i className="fas fa-heart"></i>
+          {isFavorite ? ' Added to Favorites' : ' Add to Favorites'}
         </button>
       </div>
 
-      {/* Note Section - Always show if editing OR has existing note */}
-      {(isEditing || noteText) && (
+      {/* Textarea Section */}
+      {showEditor && (
         <div className={styles.noteSection}>
           <label>
             <i className="fas fa-sticky-note"></i>
@@ -143,10 +151,10 @@ const MovieNotes = ({ movie, onNoteSaved }) => {
           <textarea
             value={noteText}
             onChange={handleNoteChange}
-            placeholder="Write your personal thoughts about this movie..."
+            placeholder="Write your thoughts about this movie..."
             className={styles.noteTextarea}
             rows={4}
-            autoFocus={isEditing && !noteText}
+            autoFocus
           />
           <div className={styles.noteActions}>
             <button className={styles.saveBtn} onClick={handleSaveNote}>
@@ -154,31 +162,27 @@ const MovieNotes = ({ movie, onNoteSaved }) => {
             </button>
             {(noteText || rating) && (
               <button className={styles.deleteBtn} onClick={handleDeleteNote}>
-                <i className="fas fa-trash"></i> Delete All
+                <i className="fas fa-trash"></i> Delete
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* Show existing note preview when not editing */}
-      {!isEditing && noteText && (
+      {/* Preview existing note */}
+      {!showEditor && noteText && (
         <div className={styles.notePreview}>
           <label>
             <i className="fas fa-sticky-note"></i>
             Your Note:
           </label>
           <p>{noteText}</p>
-          <button className={styles.editNoteBtn} onClick={() => setIsEditing(true)}>
-            <i className="fas fa-edit"></i> Edit Note
-          </button>
         </div>
       )}
 
-      {showSuccess && (
-        <div className={styles.successMessage}>
-          <i className="fas fa-check-circle"></i>
-          Saved successfully!
+      {saveStatus && (
+        <div className={saveStatus.includes('✓') ? styles.successMessage : styles.errorMessage}>
+          {saveStatus}
         </div>
       )}
     </div>
