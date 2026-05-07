@@ -59,7 +59,7 @@
   cursor: pointer;
 }
 .btnWatch {
-  background: linear-gradient(45deg,#5470a4,#2431be);
+  background: linear-gradient(135deg, #0a192f 0%, #172a45 50%, #2ec4b6 100%);
   color:#fff;
 }
 .btnList, .favBtn {

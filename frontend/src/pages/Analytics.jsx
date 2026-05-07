@@ -3,7 +3,7 @@ import AnalyticsDashboard from '../components/AnalyticsDashboard';
 import { useAnalytics } from '../hooks/useAnalytics';
 import styles from './Analytics.module.css';
 
-const Analytics = () => {
+const Analytics = ({ onOpen }) => {
   const analytics = useAnalytics();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -17,7 +17,7 @@ const Analytics = () => {
       <div className={styles.loginPrompt}>
         <i className="fas fa-chart-line"></i>
         <h2>Login to View Your Analytics</h2>
-        <p>Sign in to see your watching habits and insights.</p>
+        <p>Sign in to see your watching habits and personalized recommendations.</p>
         <button onClick={() => window.location.href = '/'} className={styles.loginBtn}>
           Go to Home
         </button>
@@ -32,9 +32,9 @@ const Analytics = () => {
           <i className="fas fa-chart-line"></i>
           Analytics Dashboard
         </h1>
-        <p>Your watching habits at a glance</p>
+        <p>Your watching habits and personalized recommendations</p>
       </div>
-      <AnalyticsDashboard analytics={analytics} />
+      <AnalyticsDashboard analytics={analytics} onOpen={onOpen} />
     </div>
   );
 };
