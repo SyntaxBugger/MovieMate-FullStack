@@ -7,32 +7,27 @@ import About from "./pages/About";
 import Main from "./pages/Main";
 import MyLibrary from "./pages/MyLibrary";
 import MyNotes from "./pages/MyNotes";
-import Analytics from "./pages/Analytics";  // ✅ ADD THIS
+import Analytics from "./pages/Analytics";
 import LoginPage from "./LoginPage";
 import RegPage from "./RegPage";
-import MovieDetailModal from "./components/MovieDetailModal";
+// Remove MovieDetailModal import if not using
 
 export default function App() {
   const [page, setPage] = useState("home");
   const [selected, setSelected] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  // Remove showModal state
 
   const openAboutPage = (item) => {
     const type = item.media_type || (item.first_air_date ? "tv" : "movie");
     setSelected({ ...item, type: type });
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelected(null);
+    setPage("about");  // ✅ Go to About page
   };
 
   const changePage = (newPage) => {
     setSearchQuery("");
     setPage(newPage);
-    setShowModal(false);
+    setSelected(null);
   };
 
   const hideNavbarFooter = page === "login" || page === "register";
@@ -50,22 +45,12 @@ export default function App() {
       {page === "movies" && <Movies onOpen={openAboutPage} />}
       {page === "tvshows" && <TvShows onOpen={openAboutPage} />}
       {page === "library" && <MyLibrary onOpen={openAboutPage} />}
-      
-      {/* MY NOTES ROUTE */}
       {page === "mynotes" && <MyNotes onOpen={openAboutPage} />}
-
-      {/* ✅ ANALYTICS ROUTE */}
-      {page === "analytics" && <Analytics />}
-
+      {page === "analytics" && <Analytics onOpen={openAboutPage} />}
+      
+      {/* ✅ About Page - Shows movie details, cast, streaming */}
       {page === "about" && selected && (
-        <About selected={selected} setPage={changePage} onOpen={openAboutPage}/>
-      )}
-
-      {showModal && selected && (
-        <MovieDetailModal 
-          movie={selected} 
-          onClose={closeModal}
-        />
+        <About selected={selected} setPage={changePage} onOpen={openAboutPage} />
       )}
 
       {page === "login" && <LoginPage setPage={changePage} />}

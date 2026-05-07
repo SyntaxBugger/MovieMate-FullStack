@@ -1,11 +1,11 @@
 import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, PointElement, LineElement } from 'chart.js';
-import { Pie, Bar, Line, Doughnut } from 'react-chartjs-2';
+import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import styles from './AnalyticsDashboard.module.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, PointElement, LineElement);
 
-const AnalyticsDashboard = ({ analytics }) => {
+const AnalyticsDashboard = ({ analytics, onOpen }) => {
   // Donut Chart - Genre Distribution
   const genreData = {
     labels: Object.keys(analytics.watchTimeByGenre),
@@ -54,9 +54,7 @@ const AnalyticsDashboard = ({ analytics }) => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        labels: { color: '#e6e6e6', font: { size: 12 } }
-      },
+      legend: { labels: { color: '#e6e6e6', font: { size: 12 } } },
       tooltip: { backgroundColor: '#112240', titleColor: '#fff', bodyColor: '#8892b0' }
     },
     scales: {
@@ -153,7 +151,11 @@ const AnalyticsDashboard = ({ analytics }) => {
           <h3>🏆 Top Rated Movies</h3>
           <div className={styles.topMoviesList}>
             {analytics.topRatedMovies.map((movie, index) => (
-              <div key={index} className={styles.topMovieItem}>
+              <div 
+                key={index} 
+                className={styles.topMovieItem}
+                onClick={() => onOpen && onOpen({ id: movie.mediaId, media_type: movie.mediaType, title: movie.title })}
+              >
                 <span className={styles.rank}>{index + 1}</span>
                 <span className={styles.movieTitle}>{movie.title || `Movie ${movie.mediaId}`}</span>
                 <span className={styles.movieRating}>⭐ {movie.rating}/10</span>
@@ -190,6 +192,64 @@ const AnalyticsDashboard = ({ analytics }) => {
           </div>
         </div>
       </div>
+
+      {/* Personalized Recommendations Section */}
+      {analytics.recommendations && analytics.recommendations.length > 0 && (
+        <div className={styles.recommendationsCard}>
+          <div className={styles.recommendationsHeader}>
+            <h3>
+              <i className="fas fa-magic"></i>
+              Personalized For You
+            </h3>
+            <span className={styles.recommendationBadge}>
+              Based on your taste
+            </span>
+          </div>
+          <p className={styles.recommendSubtitle}>
+            Recommendations generated from your • Top rated movies • Favorite genres • Watch history
+          </p>
+          <div className={styles.recommendationsGrid}>
+            {analytics.recommendations.slice(0, 6).map((movie, index) => (
+              <div 
+                key={movie.id} 
+                className={styles.recommendationCard}
+                onClick={() => onOpen && onOpen({ id: movie.id, media_type: 'movie', title: movie.title, type: 'movie' })}
+              >
+                <div className={styles.recommendationPoster}>
+                  <img 
+                    src={`https://image.tmdb.org/t/p/w200${movie.poster}`}
+                    alt={movie.title}
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/200x300?text=🎬';
+                    }}
+                  />
+                  <div className={styles.recommendationRank}>
+                    {index + 1}
+                  </div>
+                  <div className={styles.recommendationOverlay}>
+                    <i className="fas fa-play"></i>
+                  </div>
+                </div>
+                <div className={styles.recommendationInfo}>
+                  <h4>{movie.title}</h4>
+                  <div className={styles.recommendationMeta}>
+                    <span>{movie.year}</span>
+                    <span className={styles.rating}>⭐ {movie.rating}</span>
+                  </div>
+                  <p className={styles.recommendationReason}>
+                    <i className="fas fa-lightbulb"></i> {movie.reason}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className={styles.recommendationFooter}>
+            <button className={styles.moreRecommendationsBtn}>
+              See More Recommendations <i className="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
