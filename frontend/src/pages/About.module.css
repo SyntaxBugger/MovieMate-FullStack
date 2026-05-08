@@ -285,3 +285,9 @@
   color: var(--primary);
   transform: translateX(-3px);
 }
+/* Add this to About.module.css */
+.commentsSection {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(46, 196, 182, 0.2);
+}

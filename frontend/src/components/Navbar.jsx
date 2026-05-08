@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from "./Navbar.module.css";
 import logoVideo from "../assets/movielight.mp4";
+import NotificationBell from './NotificationBell';  // ✅ ADD THIS
 
 export default function Navbar({ setPage, page, onSearch }) {
   
@@ -125,7 +126,7 @@ export default function Navbar({ setPage, page, onSearch }) {
               </li>
             )}
 
-            {/* ✅ ANALYTICS LINK (Only shows if logged in) */}
+            {/* ANALYTICS LINK (Only shows if logged in) */}
             {isLoggedIn && (
               <li className={styles.navItem}>
                 <button
@@ -141,7 +142,7 @@ export default function Navbar({ setPage, page, onSearch }) {
             )}
           </ul>
 
-          {/* RIGHT SIDE - Search + Login/Logout */}
+          {/* RIGHT SIDE - Search + Notifications + Login/Logout */}
           <div className={styles.rightSection}>
             <div className={styles.searchContainer}>
               <i 
@@ -157,6 +158,9 @@ export default function Navbar({ setPage, page, onSearch }) {
                 onKeyDown={handleKeyDown} 
               />
             </div>
+            
+            {/* ✅ ADD NOTIFICATION BELL (Only shows if logged in) */}
+            {isLoggedIn && <NotificationBell />}
             
             {isLoggedIn ? (
               <button className={styles.btn} onClick={handleLogout}>

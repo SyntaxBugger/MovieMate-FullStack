@@ -5,8 +5,9 @@ import { addToFavorites, addToWatchlist, addToHistory } from "../api/api";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import RecentlyViewed from "../components/RecentlyViewed";
 import WatchPlatforms from "../components/WatchPlatforms";
-import MovieNotes from "../components/MovieNotes";  // ✅ ADD THIS
-import { useMovieNotes } from "../hooks/useMovieNotes";  // ✅ ADD THIS
+import MovieNotes from "../components/MovieNotes";
+import { useMovieNotes } from "../hooks/useMovieNotes";
+import CommentSection from "../components/CommentSection";  // ✅ ADD THIS
 
 export default function About({ selected, setPage, onOpen }) {
   const [data, setData] = useState(null);
@@ -15,17 +16,13 @@ export default function About({ selected, setPage, onOpen }) {
   const [loading, setLoading] = useState(false);
   
   const { addToRecentlyViewed, recentItems, clearRecentlyViewed, removeFromRecentlyViewed } = useRecentlyViewed();
-  
-  // ✅ ADD THIS - Movie Notes hook
   const { getNote, saveNote, deleteNote } = useMovieNotes();
   
   const id = selected?.id;
   const type = selected?.type ?? "movie";
-
-  // ✅ Get existing note for this movie
   const existingNote = getNote(id, type);
 
-  // ✅ Add to Recently Viewed when movie/show loads
+  // ✅ FIXED: Removed addToRecentlyViewed from dependencies
   useEffect(() => {
     if (id && data && data.id && (data.title || data.name)) {
       console.log("✅ Saving to recently viewed:", data.title || data.name);
@@ -37,10 +34,8 @@ export default function About({ selected, setPage, onOpen }) {
         media_type: type,
         vote_average: data.vote_average
       });
-    } else {
-      console.log("⏳ Waiting for data to load...", { id, hasData: !!data });
     }
-  }, [id, data, type, addToRecentlyViewed]);
+  }, [id, data]);
 
   useEffect(() => {
     if (!id) return;
@@ -110,8 +105,8 @@ export default function About({ selected, setPage, onOpen }) {
     window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank");
   };
 
-  // ✅ Handle save note
   const handleSaveNote = (mediaId, mediaType, noteData) => {
+    const title = data?.title || data?.name || "Untitled";
     saveNote(
       mediaId, 
       mediaType, 
@@ -123,7 +118,6 @@ export default function About({ selected, setPage, onOpen }) {
     );
   };
 
-  // ✅ Handle delete note
   const handleDeleteNote = (mediaId, mediaType) => {
     deleteNote(mediaId, mediaType);
   };
@@ -182,7 +176,6 @@ export default function About({ selected, setPage, onOpen }) {
             title={title}
           />
 
-          {/* ✅ ADD MOVIE NOTES COMPONENT */}
           <MovieNotes 
             movie={{
               id: id,
@@ -280,6 +273,14 @@ export default function About({ selected, setPage, onOpen }) {
             />
           </div>
         )}
+
+        {/* ✅ ADD COMMENTS SECTION HERE */}
+        <div className={styles.commentsSection}>
+          <CommentSection 
+            movieId={id}
+            movieTitle={title}
+          />
+        </div>
       </main>
     </div>
   );
