@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import WatchPlatforms from './WatchPlatforms';
 import MovieNotes from './MovieNotes';
+import CommentSection from './CommentSection';  // ✅ ADD THIS
 import styles from './MovieDetailModal.module.css';
 import { API_TOKEN } from '../apiToken';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { useMovieNotes } from '../hooks/useMovieNotes';
+import { useNotifications } from '../hooks/useNotifications';
 
 const MovieDetailModal = ({ movie, onClose }) => {
   const [movieDetails, setMovieDetails] = useState(null);
   const [credits, setCredits] = useState({ cast: [], crew: [] });
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'cast', 'streaming'
+  const [activeTab, setActiveTab] = useState('overview');
   
   const { addToRecentlyViewed } = useRecentlyViewed();
   const { getNote, saveNote, deleteNote } = useMovieNotes();
+  const { addNotification } = useNotifications();
 
   const existingNote = getNote(movie?.id, movie?.media_type || 'movie');
 
@@ -26,8 +29,14 @@ const MovieDetailModal = ({ movie, onClose }) => {
         media_type: movie.media_type || 'movie',
         vote_average: movie.vote_average
       });
+      
+      addNotification(
+        'Recently Viewed',
+        `"${movie.title || movie.name}" added to your history`,
+        'info'
+      );
     }
-  }, [movie, addToRecentlyViewed]);
+  }, [movie, addToRecentlyViewed, addNotification]);
 
   useEffect(() => {
     if (movie && movie.id) {
@@ -56,6 +65,7 @@ const MovieDetailModal = ({ movie, onClose }) => {
       setMovieDetails(data);
     } catch (error) {
       console.error('Error fetching details:', error);
+      addNotification('Error', 'Failed to load movie details', 'error');
     } finally {
       setLoading(false);
     }
@@ -99,6 +109,31 @@ const MovieDetailModal = ({ movie, onClose }) => {
 
   const handleDeleteNote = (mediaId, mediaType) => {
     deleteNote(mediaId, mediaType);
+  };
+
+  const handleWatchlist = () => {
+    addNotification(
+      'Added to Watchlist',
+      `"${title}" added to your watchlist`,
+      'success'
+    );
+  };
+
+  const handleFavorite = () => {
+    addNotification(
+      'Added to Favorites',
+      `"${title}" added to your favorites`,
+      'success'
+    );
+  };
+
+  const handleTrailer = () => {
+    addNotification(
+      'Playing Trailer',
+      `Opening trailer for "${title}"`,
+      'info'
+    );
+    window.open(`https://www.youtube.com/results?search_query=${title} trailer`, '_blank');
   };
 
   if (!movie) return null;
@@ -162,13 +197,13 @@ const MovieDetailModal = ({ movie, onClose }) => {
                 <p className={styles.overview}>{overview}</p>
                 
                 <div className={styles.actions}>
-                  <button className={styles.watchlistBtn}>
+                  <button className={styles.watchlistBtn} onClick={handleWatchlist}>
                     <i className="fas fa-plus"></i> Watchlist
                   </button>
-                  <button className={styles.favoriteBtn}>
+                  <button className={styles.favoriteBtn} onClick={handleFavorite}>
                     <i className="fas fa-heart"></i> Favorite
                   </button>
-                  <button className={styles.trailerBtn}>
+                  <button className={styles.trailerBtn} onClick={handleTrailer}>
                     <i className="fas fa-play"></i> Trailer
                   </button>
                 </div>
@@ -202,6 +237,13 @@ const MovieDetailModal = ({ movie, onClose }) => {
             >
               <i className="fas fa-pen"></i> My Notes
             </button>
+            {/* ✅ ADD COMMENTS TAB */}
+            <button 
+              className={`${styles.tab} ${activeTab === 'comments' ? styles.active : ''}`}
+              onClick={() => setActiveTab('comments')}
+            >
+              <i className="fas fa-comments"></i> Comments
+            </button>
           </div>
 
           {/* Tab Content */}
@@ -231,7 +273,6 @@ const MovieDetailModal = ({ movie, onClose }) => {
                   </div>
                 </div>
                 
-                {/* Movie Notes inside Overview */}
                 <MovieNotes 
                   movie={{
                     id: movie.id,
@@ -249,7 +290,6 @@ const MovieDetailModal = ({ movie, onClose }) => {
             {/* Cast & Crew Tab */}
             {activeTab === 'cast' && (
               <div className={styles.castTab}>
-                {/* Main Cast Section */}
                 <div className={styles.castSection}>
                   <h3>
                     <i className="fas fa-star"></i> Top Cast
@@ -274,7 +314,6 @@ const MovieDetailModal = ({ movie, onClose }) => {
                   </div>
                 </div>
 
-                {/* Director Section */}
                 <div className={styles.crewSection}>
                   <h3>
                     <i className="fas fa-video"></i> Crew
@@ -318,7 +357,7 @@ const MovieDetailModal = ({ movie, onClose }) => {
               </div>
             )}
 
-            {/* Streaming Tab - Where to Watch */}
+            {/* Streaming Tab */}
             {activeTab === 'streaming' && (
               <div className={styles.streamingTab}>
                 <WatchPlatforms 
@@ -342,6 +381,16 @@ const MovieDetailModal = ({ movie, onClose }) => {
                     onSave: handleSaveNote,
                     onDelete: handleDeleteNote
                   }}
+                />
+              </div>
+            )}
+
+            {/* ✅ COMMENTS TAB */}
+            {activeTab === 'comments' && (
+              <div className={styles.commentsTab}>
+                <CommentSection 
+                  movieId={movie.id}
+                  movieTitle={title}
                 />
               </div>
             )}

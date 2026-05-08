@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import RatingStars from './RatingStars';
 import styles from './MovieNotes.module.css';
+import { useNotifications } from '../hooks/useNotifications';  // ✅ ADD THIS
 
 const MovieNotes = ({ movie }) => {
   const [rating, setRating] = useState(null);
@@ -8,8 +9,10 @@ const MovieNotes = ({ movie }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
+  
+  const { addNotification } = useNotifications();  // ✅ ADD THIS
 
-  // Load existing note when movie changes - FIXED: Added proper dependencies
+  // Load existing note when movie changes
   useEffect(() => {
     if (!movie) return;
     
@@ -26,7 +29,7 @@ const MovieNotes = ({ movie }) => {
       setIsFavorite(false);
       setShowEditor(false);
     }
-  }, [movie?.id]); // Only run when movie ID changes, not on every render
+  }, [movie?.id]);
 
   // Save to localStorage
   const saveToLocalStorage = (newRating, newNote, newFavorite) => {
@@ -67,6 +70,12 @@ const MovieNotes = ({ movie }) => {
   const handleRatingChange = (newRating) => {
     setRating(newRating);
     saveToLocalStorage(newRating, noteText, isFavorite);
+    // ✅ ADD NOTIFICATION FOR RATING
+    addNotification(
+      'Movie Rated', 
+      `You rated "${movie.title}" ${newRating}/10`, 
+      'success'
+    );
   };
 
   const handleNoteChange = (e) => {
@@ -75,10 +84,16 @@ const MovieNotes = ({ movie }) => {
 
   const handleSaveNote = () => {
     if (!noteText.trim() && !rating) {
-      alert('Please add a rating or write a note');
+      addNotification('Cannot Save', 'Please add a rating or write a note', 'warning');
       return;
     }
     saveToLocalStorage(rating, noteText, isFavorite);
+    // ✅ ADD NOTIFICATION FOR SAVING NOTE
+    addNotification(
+      'Note Saved', 
+      `Your note for "${movie.title}" has been saved!`, 
+      'success'
+    );
   };
 
   const handleDeleteNote = () => {
@@ -88,6 +103,12 @@ const MovieNotes = ({ movie }) => {
       setIsFavorite(false);
       setShowEditor(false);
       saveToLocalStorage(null, '', false);
+      // ✅ ADD NOTIFICATION FOR DELETING NOTE
+      addNotification(
+        'Note Deleted', 
+        `Your note for "${movie.title}" has been deleted`, 
+        'info'
+      );
     }
   };
 
@@ -95,6 +116,20 @@ const MovieNotes = ({ movie }) => {
     const newFavorite = !isFavorite;
     setIsFavorite(newFavorite);
     saveToLocalStorage(rating, noteText, newFavorite);
+    // ✅ ADD NOTIFICATION FOR FAVORITE
+    if (newFavorite) {
+      addNotification(
+        'Added to Favorites', 
+        `"${movie.title}" added to your favorites`, 
+        'success'
+      );
+    } else {
+      addNotification(
+        'Removed from Favorites', 
+        `"${movie.title}" removed from favorites`, 
+        'info'
+      );
+    }
   };
 
   return (

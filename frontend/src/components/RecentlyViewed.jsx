@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import styles from './RecentlyViewed.module.css';
+import { useNotifications } from '../hooks/useNotifications';  // ✅ ADD THIS
 
 const RecentlyViewed = ({ items, onItemClick, onRemove, onClearAll, title = "Recently Viewed" }) => {
   const [showConfirm, setShowConfirm] = useState(false);
+  const { addNotification } = useNotifications();  // ✅ ADD THIS
 
   if (!items || items.length === 0) {
     return null;
@@ -13,6 +15,37 @@ const RecentlyViewed = ({ items, onItemClick, onRemove, onClearAll, title = "Rec
       onClearAll();
     }
     setShowConfirm(false);
+    // ✅ ADD NOTIFICATION FOR CLEARING ALL
+    addNotification(
+      'History Cleared',
+      'All recently viewed items have been cleared',
+      'info'
+    );
+  };
+
+  // ✅ HANDLE REMOVE SINGLE ITEM WITH NOTIFICATION
+  const handleRemoveItem = (e, itemId, itemTitle) => {
+    e.stopPropagation();
+    if (onRemove) {
+      onRemove(itemId);
+      addNotification(
+        'Item Removed',
+        `"${itemTitle}" removed from recently viewed`,
+        'info'
+      );
+    }
+  };
+
+  // ✅ HANDLE ITEM CLICK WITH NOTIFICATION
+  const handleItemClick = (item) => {
+    if (onItemClick) {
+      onItemClick(item);
+      addNotification(
+        'Opening Movie',
+        `Opening "${item.title}"`,
+        'info'
+      );
+    }
   };
 
   return (
@@ -59,7 +92,7 @@ const RecentlyViewed = ({ items, onItemClick, onRemove, onClearAll, title = "Rec
           <div 
             key={item.id} 
             className={styles.card}
-            onClick={() => onItemClick && onItemClick(item)}
+            onClick={() => handleItemClick(item)}
             style={{ animationDelay: `${index * 0.05}s` }}
           >
             <div className={styles.posterContainer}>
@@ -81,10 +114,7 @@ const RecentlyViewed = ({ items, onItemClick, onRemove, onClearAll, title = "Rec
               
               <button 
                 className={styles.removeBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemove && onRemove(item.id);
-                }}
+                onClick={(e) => handleRemoveItem(e, item.id, item.title)}
                 title="Remove from recently viewed"
               >
                 <i className="fas fa-times"></i>

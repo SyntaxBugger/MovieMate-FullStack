@@ -6,7 +6,7 @@ const MAX_ITEMS = 12;
 export const useRecentlyViewed = () => {
   const [recentItems, setRecentItems] = useState([]);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount - ONLY ONCE
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -19,7 +19,7 @@ export const useRecentlyViewed = () => {
         setRecentItems([]);
       }
     }
-  }, []);
+  }, []); // ✅ EMPTY DEPENDENCY ARRAY - Runs only once
 
   // Add item to recently viewed
   const addToRecentlyViewed = (item) => {
@@ -67,10 +67,12 @@ export const useRecentlyViewed = () => {
 
   // Remove single item
   const removeFromRecentlyViewed = (id) => {
-    const newList = recentItems.filter(item => item.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
-    setRecentItems(newList);
-    console.log('❌ Removed item with id:', id);
+    setRecentItems(prev => {
+      const newList = prev.filter(item => item.id !== id);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
+      console.log('❌ Removed item with id:', id);
+      return newList;
+    });
   };
 
   // Get recently viewed count
