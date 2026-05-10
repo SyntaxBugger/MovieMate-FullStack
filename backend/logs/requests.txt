@@ -884,3 +884,5 @@ GET request to /static/media_files/movielight.mp4
 [1:11:13 pm] GET /api/library?category=favorites
 [9:13:19 am] OPTIONS /api/auth/login
 [9:13:19 am] POST /api/auth/login
+[12:04:56 pm] OPTIONS /api/auth/login
+[12:04:56 pm] POST /api/auth/login
