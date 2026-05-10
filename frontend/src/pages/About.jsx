@@ -49,6 +49,12 @@ export default function About({ selected, setPage, onOpen }) {
           const d = await getMovieDetails(id);
           if (!mounted) return;
           setData(d);
+            await addToHistory({
+    id: d.id,
+    title: d.title || d.name,
+    poster_path: d.poster_path,
+    media_type: type
+  });
           const c = await getCredits(id, "movie");
           if (!mounted) return;
           setCredits(c);
@@ -59,6 +65,12 @@ export default function About({ selected, setPage, onOpen }) {
           const d = await getTvDetails(id);
           if (!mounted) return;
           setData(d);
+            await addToHistory({
+    id: d.id,
+    title: d.title || d.name,
+    poster_path: d.poster_path,
+    media_type: type
+  });
           const c = await getCredits(id, "tv");
           if (!mounted) return;
           setCredits(c);
@@ -88,19 +100,33 @@ export default function About({ selected, setPage, onOpen }) {
     };
   };
 
-  const handleFav = () => {
-    if (!data) return;
-    addToFavorites(getMovieObject());
-  };
+  const handleFav = async () => {
+  if (!data) return;
 
-  const handleWatchlist = () => {
-    if (!data) return;
-    addToWatchlist(getMovieObject());
-  };
+  console.log("FAV BUTTON CLICKED");
 
+  try {
+    await addToFavorites(getMovieObject());
+    console.log("FAVORITE SUCCESS");
+  } catch (err) {
+    console.error("FAVORITE ERROR:", err);
+  }
+};
+
+const handleWatchlist = async () => {
+  if (!data) return;
+
+  console.log("WATCHLIST BUTTON CLICKED");
+
+  try {
+    await addToWatchlist(getMovieObject());
+    console.log("WATCHLIST SUCCESS");
+  } catch (err) {
+    console.error("WATCHLIST ERROR:", err);
+  }
+};
   const handleTrailer = () => {
     if (!data) return;
-    addToHistory(getMovieObject());
     const query = `${data.title || data.name} trailer`;
     window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank");
   };

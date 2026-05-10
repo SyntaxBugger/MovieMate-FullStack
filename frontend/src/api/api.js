@@ -67,7 +67,7 @@ async function addToList(category, movie) {
 
   await postData("library/add", {
     movieId: movie.id,
-    title: movie.title,
+    title: movie.title || movie.name,
     poster_path: movie.poster_path,
     media_type: movie.media_type,
     category,
