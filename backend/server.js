@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
+
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -25,6 +26,7 @@ const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 
 // Import Routes
+const commentRoutes = require('./routes/commentRoutes');
 const authRoutes = require('./routes/authRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const tmdbRoutes = require('./routes/tmdbRoutes');
@@ -117,6 +119,7 @@ app.get('/dashboard', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/tmdb', tmdbRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Home Route
 app.get('/', (req, res) => {

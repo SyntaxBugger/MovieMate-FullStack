@@ -66,3 +66,9 @@
 [2026-05-01T05:19:40.617Z] GET /api/auth/login - ERROR: Cannot GET /api/auth/login
 [2026-05-19T04:17:37.419Z] GET /api/library?category=history - ERROR: connect ECONNABORTED 159.41.243.26:27017
 [2026-05-20T07:35:33.993Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico
+[2026-05-20T13:58:50.760Z] GET /api/comments - ERROR: Cannot GET /api/comments
+[2026-05-20T13:58:53.523Z] GET /api/comments - ERROR: Cannot GET /api/comments
+[2026-05-20T14:02:31.977Z] PATCH /api/comments/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/cmpe4qo660000tqj8ahgu362w
+[2026-05-20T14:02:53.238Z] PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w
+[2026-05-20T14:03:20.822Z] PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w
+[2026-05-20T14:03:36.674Z] PATCH /api/comments/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/cmpe4qo660000tqj8ahgu362w

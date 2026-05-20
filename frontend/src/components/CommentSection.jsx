@@ -4,12 +4,18 @@ import styles from './CommentSection.module.css';
 
 const CommentSection = ({ movieId, movieTitle }) => {
   const [newComment, setNewComment] = useState('');
-  const [replyText, setReplyText] = useState({});
-  const [showReplies, setShowReplies] = useState({});
-  const [replyingTo, setReplyingTo] = useState(null);
   const [user, setUser] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState('');
 
-  const { comments, loading, addComment, addReply, likeComment, deleteComment, getCommentCount } = useComments(movieId, movieTitle);
+ const {
+  comments,
+  loading,
+  addComment,
+  updateComment,
+  deleteComment,
+  getCommentCount
+} = useComments(movieId, movieTitle);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -47,19 +53,16 @@ const CommentSection = ({ movieId, movieTitle }) => {
       addComment(newComment, getUserName());
       setNewComment('');
     }
-  };
+  }; 
+  const handleUpdateComment = async (id) => {
 
-  const handleSubmitReply = (parentId) => {
-    if (replyText[parentId]?.trim()) {
-      addReply(parentId, replyText[parentId], getUserName());
-      setReplyText(prev => ({ ...prev, [parentId]: '' }));
-      setReplyingTo(null);
-    }
-  };
+  if (!editText.trim()) return;
 
-  const toggleReplies = (commentId) => {
-    setShowReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
-  };
+  await updateComment(id, editText);
+
+  setEditingId(null);
+  setEditText('');
+};
 
   const getInitials = (name) => {
     return name.slice(0, 2).toUpperCase();
@@ -129,124 +132,79 @@ const CommentSection = ({ movieId, movieTitle }) => {
             <div key={comment.id} className={styles.commentItem}>
               <div className={styles.commentAvatar}>
                 {comment.userAvatar ? (
-                  <img src={comment.userAvatar} alt={comment.userName} />
+                  <img src={comment.userAvatar} alt={comment.username} />
                 ) : (
                   <div 
                     className={styles.avatarPlaceholder}
-                    style={{ backgroundColor: getAvatarColor(comment.userName) }}
+                    style={{ backgroundColor: getAvatarColor(comment.username) }}
                   >
-                    {getInitials(comment.userName)}
+                    {getInitials(comment.username)}
                   </div>
                 )}
               </div>
               <div className={styles.commentContent}>
                 <div className={styles.commentHeader}>
-                  <span className={styles.userName}>{comment.userName}</span>
+                  <span className={styles.username}>{comment.username}</span>
                   <span className={styles.commentTime}>{formatDate(comment.createdAt)}</span>
                 </div>
-                <p className={styles.commentText}>{comment.text}</p>
+               {editingId === comment.id ? (
+  <div className={styles.editSection}>
+    <textarea
+      value={editText}
+      onChange={(e) =>
+        setEditText(e.target.value)
+      }
+      className={styles.commentInput}
+      rows={3}
+    />
+
+    <div className={styles.editActions}>
+      <button
+        type="button"
+        onClick={() =>
+          handleUpdateComment(comment.id)
+        }
+      >
+        Save
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          setEditingId(null);
+          setEditText('');
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+) : (
+  <p className={styles.commentText}>
+    {comment.content}
+  </p>
+)}
                 <div className={styles.commentActions}>
-                  <button 
-                    className={styles.likeBtn}
-                    onClick={() => likeComment(comment.id)}
-                  >
-                    <i className="fas fa-heart"></i>
-                    <span>{comment.likes || 0}</span>
-                  </button>
-                  <button 
-                    className={styles.replyBtn}
-                    onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                  >
-                    <i className="fas fa-reply"></i>
-                    Reply
-                  </button>
-                  <button 
-                    className={styles.deleteBtn}
-                    onClick={() => deleteComment(comment.id)}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </button>
+                  <button
+    type="button"
+    onClick={() => {
+      setEditingId(comment.id);
+      setEditText(comment.content);
+    }}
+  >
+    <i className="fas fa-pen"></i>
+  </button>
+
+  <button
+    type="button"
+    className={styles.deleteBtn}
+    onClick={() =>
+      deleteComment(comment.id)
+    }
+  >
+    <i className="fas fa-trash"></i>
+  </button>
                 </div>
-
-                {/* Reply Form */}
-                {replyingTo === comment.id && (
-                  <div className={styles.replyForm}>
-                    <textarea
-                      value={replyText[comment.id] || ''}
-                      onChange={(e) => setReplyText(prev => ({ ...prev, [comment.id]: e.target.value }))}
-                      placeholder="Write a reply..."
-                      className={styles.replyInput}
-                      rows={2}
-                    />
-                    <div className={styles.replyActions}>
-                      <button 
-                        className={styles.cancelReplyBtn}
-                        onClick={() => setReplyingTo(null)}
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        className={styles.submitReplyBtn}
-                        onClick={() => handleSubmitReply(comment.id)}
-                        disabled={!replyText[comment.id]?.trim()}
-                      >
-                        Post Reply
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Replies */}
-                {comment.replies && comment.replies.length > 0 && (
-                  <div className={styles.repliesSection}>
-                    <button 
-                      className={styles.showRepliesBtn}
-                      onClick={() => toggleReplies(comment.id)}
-                    >
-                      <i className={`fas fa-chevron-${showReplies[comment.id] ? 'up' : 'down'}`}></i>
-                      {showReplies[comment.id] ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
-                    </button>
-                    
-                    {showReplies[comment.id] && (
-                      <div className={styles.repliesList}>
-                        {comment.replies.map(reply => (
-                          <div key={reply.id} className={styles.replyItem}>
-                            <div className={styles.replyAvatar}>
-                              <div 
-                                className={styles.avatarPlaceholderSmall}
-                                style={{ backgroundColor: getAvatarColor(reply.userName) }}
-                              >
-                                {getInitials(reply.userName)}
-                              </div>
-                            </div>
-                            <div className={styles.replyContent}>
-                              <div className={styles.replyHeader}>
-                                <span className={styles.userName}>{reply.userName}</span>
-                                <span className={styles.replyTime}>{formatDate(reply.createdAt)}</span>
-                              </div>
-                              <p className={styles.replyText}>{reply.text}</p>
-                              <div className={styles.replyActions}>
-                                <button 
-                                  className={styles.likeBtn}
-                                  onClick={() => likeComment(reply.id, true, comment.id)}
-                                >
-                                  <i className="fas fa-heart"></i>
-                                  <span>{reply.likes || 0}</span>
-                                </button>
-                                <button 
-                                  className={styles.deleteBtn}
-                                  onClick={() => deleteComment(reply.id, true, comment.id)}
-                                >
-                                  <i className="fas fa-trash"></i>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
           ))
