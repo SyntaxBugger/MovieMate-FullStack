@@ -63,6 +63,12 @@ const addToLibrary = async (req, res, next) => {
             watchStatus: watchStatus || 'planning'
         });
         console.log("Saved item:", newItem);
+        const io = req.app.get('io');
+
+io.emit('activity', {
+  category,
+  title
+});
 
         res.status(201).json({
             message: "Added successfully!",

@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import styles from "./Navbar.module.css";
 import logoVideo from "../assets/movielight.mp4";
 import NotificationBell from './NotificationBell';  // ✅ ADD THIS
+import socket from '../socket';
 
 export default function Navbar({ setPage, page, onSearch }) {
   
   const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem("user"); 
@@ -16,7 +18,17 @@ export default function Navbar({ setPage, page, onSearch }) {
   const getLinkClass = (pageName) => {
     return `${styles.navLink} ${page === pageName ? styles.active : ''}`;
   };
+  useEffect(() => {
 
+  socket.on('onlineUsers', (count) => {
+    setOnlineUsers(count);
+  });
+
+  return () => {
+    socket.off('onlineUsers');
+  };
+
+}, []);
   const handleSearch = () => {
     if (query.trim()) {
       onSearch(query);
@@ -144,6 +156,7 @@ export default function Navbar({ setPage, page, onSearch }) {
 
           {/* RIGHT SIDE - Search + Notifications + Login/Logout */}
           <div className={styles.rightSection}>
+            <div>🟢 {onlineUsers} Online</div>
             <div className={styles.searchContainer}>
               <i 
                 className={`fas fa-search ${styles.searchIcon}`} 
