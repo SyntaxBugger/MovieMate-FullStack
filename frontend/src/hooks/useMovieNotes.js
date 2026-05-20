@@ -1,109 +1,129 @@
-import { useState, useEffect } from 'react';
-
-const STORAGE_KEY = 'moviemate_movie_notes';
+import { useState, useEffect } from "react";
+import {
+  getHistory,
+  getLibraryItem,
+  updateLibraryItem
+} from "../api/api";
 
 export const useMovieNotes = () => {
   const [notes, setNotes] = useState([]);
 
-  // Load notes from localStorage on mount
+  // Load all history items with notes/ratings
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setNotes(parsed);
-      } catch (error) {
-        console.error('Error loading notes:', error);
-        setNotes([]);
-      }
-    }
+    loadNotes();
   }, []);
 
-  // Save notes to localStorage
-  const saveNotes = (newNotes) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newNotes));
-    setNotes(newNotes);
-  };
+  const loadNotes = async () => {
+    try {
+      const history = await getHistory();
 
-  // Get note for a specific movie
-  const getNote = (mediaId, mediaType = 'movie') => {
-    return notes.find(n => n.mediaId === mediaId && n.mediaType === mediaType);
-  };
+      const formatted = history.map(item => ({
+        mediaId: item.movieId,
+        mediaType: item.media_type,
+        title: item.title,
+        poster_path: item.poster_path,
+        rating: item.rating || null,
+        note: item.notes || "",
+        isFavorite: item.category === "favorites",
+        updatedAt: item.updatedAt,
+        libraryId: item._id
+      }));
+      console.log("RAW HISTORY:", history);
+console.log("FORMATTED NOTES:", formatted);
 
-  // Add or update note
-  const saveNote = (mediaId, mediaType, title, poster_path, rating, noteText, isFavorite = false) => {
-    const existingNoteIndex = notes.findIndex(n => n.mediaId === mediaId && n.mediaType === mediaType);
-    
-    const newNote = {
-      mediaId,
-      mediaType,
-      title,
-      poster_path,
-      rating: rating || null,
-      note: noteText || '',
-      isFavorite,
-      updatedAt: new Date().toISOString()
-    };
+      setNotes(formatted);
 
-    let newNotes;
-    if (existingNoteIndex !== -1) {
-      // Update existing note
-      newNotes = [...notes];
-      newNotes[existingNoteIndex] = { ...newNotes[existingNoteIndex], ...newNote };
-    } else {
-      // Add new note
-      newNotes = [newNote, ...notes];
-    }
-
-    saveNotes(newNotes);
-    return newNote;
-  };
-
-  // Delete note
-  const deleteNote = (mediaId, mediaType) => {
-    const newNotes = notes.filter(n => !(n.mediaId === mediaId && n.mediaType === mediaType));
-    saveNotes(newNotes);
-  };
-
-  // Update rating only
-  const updateRating = (mediaId, mediaType, rating) => {
-    const existingNote = getNote(mediaId, mediaType);
-    if (existingNote) {
-      saveNote(mediaId, mediaType, existingNote.title, existingNote.poster_path, rating, existingNote.note, existingNote.isFavorite);
-    } else {
-      // Create new note with just rating
-      saveNote(mediaId, mediaType, '', '', rating, '', false);
+    } catch (err) {
+      console.error("Error loading notes:", err);
     }
   };
 
-  // Update note only
-  const updateNoteText = (mediaId, mediaType, noteText) => {
-    const existingNote = getNote(mediaId, mediaType);
-    if (existingNote) {
-      saveNote(mediaId, mediaType, existingNote.title, existingNote.poster_path, existingNote.rating, noteText, existingNote.isFavorite);
-    } else {
-      saveNote(mediaId, mediaType, '', '', null, noteText, false);
+  const getNote = (mediaId, mediaType = "movie") => {
+    return notes.find(
+      n => n.mediaId === mediaId && n.mediaType === mediaType
+    );
+  };
+
+  const saveNote = async (
+    mediaId,
+    mediaType,
+    title,
+    poster_path,
+    rating,
+    noteText,
+    isFavorite = false
+  ) => {
+    try {
+      const existing = await getLibraryItem(mediaId, "history");
+
+      if (!existing) {
+        console.error("No history item exists yet");
+        return;
+      }
+
+      const updated = await updateLibraryItem(existing._id, {
+        rating: rating || 0,
+        notes: noteText || "",
+        watched: true
+      });
+
+      await loadNotes();
+
+      return updated;
+
+    } catch (err) {
+      console.error("Save note error:", err);
     }
   };
 
-  // Toggle favorite
-  const toggleFavorite = (mediaId, mediaType) => {
-    const existingNote = getNote(mediaId, mediaType);
-    if (existingNote) {
-      saveNote(mediaId, mediaType, existingNote.title, existingNote.poster_path, existingNote.rating, existingNote.note, !existingNote.isFavorite);
-    } else {
-      saveNote(mediaId, mediaType, '', '', null, '', true);
-    }
-  };
+ const deleteNote = async (
+  mediaId,
+  mediaType
+) => {
 
-  // Get all favorite movies
+  try {
+
+    const existing =
+      await getLibraryItem(
+        mediaId,
+        "history"
+      );
+
+    if (!existing) return;
+
+    await updateLibraryItem(
+      existing._id,
+      {
+        rating: 0,
+        notes: ""
+      }
+    );
+
+    // Remove from frontend state immediately
+    setNotes(prev =>
+      prev.filter(
+        n =>
+          !(
+            n.mediaId === mediaId &&
+            n.mediaType === mediaType
+          )
+      )
+    );
+
+  } catch (err) {
+
+    console.error(
+      "Delete note error:",
+      err
+    );
+  }
+};
   const getFavorites = () => {
     return notes.filter(n => n.isFavorite);
   };
 
-  // Get all notes with ratings
   const getRatedMovies = () => {
-    return notes.filter(n => n.rating !== null && n.rating > 0);
+    return notes.filter(n => n.rating && n.rating > 0);
   };
 
   return {
@@ -111,9 +131,6 @@ export const useMovieNotes = () => {
     getNote,
     saveNote,
     deleteNote,
-    updateRating,
-    updateNoteText,
-    toggleFavorite,
     getFavorites,
     getRatedMovies
   };

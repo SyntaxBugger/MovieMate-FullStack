@@ -76,7 +76,7 @@ export default function MovieRow({ title, path, params = {}, onOpen }) {
             <MovieCard 
               key={movie.id} 
               movie={movie} 
-              onClick={() => onOpen(movie)} 
+              onClick={onOpen} 
             />
           ))}
         </div>

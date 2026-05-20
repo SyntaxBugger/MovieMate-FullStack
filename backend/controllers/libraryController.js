@@ -14,6 +14,7 @@ const getLibrary = async (req, res, next) => {
         }
 
         const items = await Library.find(query);
+        
 
         res.status(200).json(items);
 
@@ -30,7 +31,8 @@ const addToLibrary = async (req, res, next) => {
             title,
             poster_path,
             media_type,
-            category
+            category,
+            watchStatus,
         } = req.body;
 
         if (!movieId || !title || !category) {
@@ -57,8 +59,10 @@ const addToLibrary = async (req, res, next) => {
             title,
             poster_path,
             media_type,
-            category
+            category,
+            watchStatus: watchStatus || 'planning'
         });
+        console.log("Saved item:", newItem);
 
         res.status(201).json({
             message: "Added successfully!",

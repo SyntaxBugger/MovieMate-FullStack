@@ -64,3 +64,5 @@
 [2026-05-01T04:53:58.338Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
 [2026-05-01T04:54:22.585Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
 [2026-05-01T05:19:40.617Z] GET /api/auth/login - ERROR: Cannot GET /api/auth/login
+[2026-05-19T04:17:37.419Z] GET /api/library?category=history - ERROR: connect ECONNABORTED 159.41.243.26:27017
+[2026-05-20T07:35:33.993Z] GET /favicon.ico - ERROR: Cannot GET /favicon.ico

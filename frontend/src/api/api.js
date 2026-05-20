@@ -1,4 +1,6 @@
+import toast from 'react-hot-toast';
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 
 const getToken = () => localStorage.getItem("token");
 
@@ -61,7 +63,7 @@ export function logoutUser() {
 async function addToList(category, movie) {
   const token = getToken();
   if (!token) {
-    alert("Please log in to save movies!");
+    toast.error("Please log in to add items.");
     return;
   }
 
@@ -71,9 +73,12 @@ async function addToList(category, movie) {
     poster_path: movie.poster_path,
     media_type: movie.media_type,
     category,
+    watchStatus: movie.watchStatus,
   });
 
-  alert(`Added to ${category}!`);
+ if (category !== "history") {
+  toast.success(`Added to ${category}!`);
+}
 }
 
 async function getUserCollection(category) {
@@ -96,10 +101,32 @@ export async function removeFromCollection(category, movieId) {
 
   await request(`library/remove/${items[0]._id}`, { method: "DELETE" });
 }
+export async function getLibraryItem(movieId, category = "history") {
+  const items = await getData(`library?category=${category}&movieId=${movieId}`);
+  return items[0] || null;
+}
+
+export async function updateLibraryItem(id, data) {
+  return request(`library/update/${id}`, {
+    method: "PATCH",
+    body: data
+  });
+}
 
 export const addToFavorites = (movie) => addToList("favorites", movie);
-export const addToWatchlist = (movie) => addToList("watchlist", movie);
-export const addToHistory = (movie) => addToList("history", movie);
+export const addToWatchlist = (
+  movie,
+  watchStatus = "planning"
+) =>
+  addToList("watchlist", {
+    ...movie,
+    watchStatus
+  });
+export const addToHistory = (movie) =>
+  addToList("history", {
+    ...movie,
+    watchStatus: "completed"
+  });
 
 export const getFavorites = () => getUserCollection("favorites");
 export const getWatchlist = () => getUserCollection("watchlist");
