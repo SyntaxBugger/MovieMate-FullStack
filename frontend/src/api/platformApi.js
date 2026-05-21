@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const rawApiUrl = import.meta.env.VITE_API_URL;
+const rawSocketUrl = import.meta.env.VITE_SOCKET_URL;
+const DEFAULT_API_BASE_URL = 'http://localhost:5000/api';
+
+const API_BASE_URL = rawApiUrl || (rawSocketUrl ? `${rawSocketUrl.replace(/\/$/, '')}/api` : DEFAULT_API_BASE_URL);
 
 export const platformApi = {
   // Get watch providers for a movie or TV show
