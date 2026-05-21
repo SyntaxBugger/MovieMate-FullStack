@@ -1,15 +1,14 @@
+require('dotenv').config();
 const express = require('express');
-const dotenv = require('dotenv');
 const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-
+const upload =
+  require('./middleware/upload');
 const http = require('http');
 const { Server } = require('socket.io');
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +27,7 @@ app.set("io", io);
 // Import Middleware
 const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
+
 
 // Import Routes
 const commentRoutes = require('./routes/commentRoutes');

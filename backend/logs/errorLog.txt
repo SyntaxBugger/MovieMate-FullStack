@@ -72,3 +72,35 @@
 [2026-05-20T14:02:53.238Z] PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w
 [2026-05-20T14:03:20.822Z] PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/550/cmpe4qo660000tqj8ahgu362w
 [2026-05-20T14:03:36.674Z] PATCH /api/comments/cmpe4qo660000tqj8ahgu362w - ERROR: Cannot PATCH /api/comments/cmpe4qo660000tqj8ahgu362w
+[2026-05-21T07:16:26.198Z] POST /upload-test - ERROR: Unexpected end of form
+[2026-05-21T07:17:14.432Z] POST /upload-test - ERROR: Unexpected end of form
+[2026-05-21T07:20:31.284Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:26:11.470Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:26:41.776Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:26:50.793Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:26:56.980Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:27:04.800Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:27:04.869Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:28:23.510Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:28:51.990Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:28:52.047Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:31:57.041Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:31:57.188Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:31:59.255Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:31:59.309Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:32:00.176Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:32:00.240Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:32:00.540Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:32:00.601Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:32:00.911Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:32:00.965Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:32:01.098Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:32:01.154Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:34:38.701Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:34:56.725Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:35:03.953Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:35:04.044Z] GET /.well-known/appspecific/com.chrome.devtools.json - ERROR: Cannot GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-05-21T07:36:02.398Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:43:09.047Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T07:43:13.634Z] POST /upload-test - ERROR: Must supply api_key
+[2026-05-21T08:11:54.694Z] POST /api/auth/upload-profile - ERROR: Unexpected end of form

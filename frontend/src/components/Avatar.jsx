@@ -30,40 +30,112 @@ const Avatar = ({ name, size = 'medium', onAvatarChange }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+const handlePhotoUpload = async (event) => {
 
-  const handlePhotoUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('Please upload a valid image file');
-      return;
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/gif',
+    'image/webp'
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert('Please upload a valid image file');
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert('File size must be less than 5MB');
+    return;
+  }
+
+  try {
+
+    const user =
+      JSON.parse(
+        localStorage.getItem('user')
+      );
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      'image',
+      file
+    );
+
+    formData.append(
+      'userId',
+      user.id
+    );
+
+    const response =
+      await fetch(
+        'http://localhost:5000/api/auth/upload-profile',
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (data.success) {
+
+      setPhotoAvatar(
+        data.imageUrl
+      );
+
+      setAvatarType(
+        'photo'
+      );
+
+      localStorage.setItem(
+        'user_avatar',
+        data.imageUrl
+      );
+
+      localStorage.setItem(
+        'avatar_type',
+        'photo'
+      );
+
+      if (onAvatarChange) {
+        onAvatarChange(
+          data.imageUrl
+        );
+      }
+
+      alert(
+        'Profile photo updated!'
+      );
+
+    } else {
+
+      alert(
+        data.message ||
+        'Upload failed'
+      );
+
     }
-    
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB');
-      return;
-    }
-    
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const imageData = reader.result;
-      setPhotoAvatar(imageData);
-      setAvatarType('photo');
-      localStorage.setItem('user_avatar', imageData);
-      localStorage.setItem('avatar_type', 'photo');
-      if (onAvatarChange) onAvatarChange(imageData);
-      setShowMenu(false);
-      
-      const msg = document.createElement('div');
-      msg.textContent = '✓ Photo avatar saved!';
-      msg.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#2ec4b6;color:#0a192f;padding:10px 20px;border-radius:8px;z-index:9999';
-      document.body.appendChild(msg);
-      setTimeout(() => msg.remove(), 2000);
-    };
-    reader.readAsDataURL(file);
-  };
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      'Upload failed'
+    );
+
+  }
+
+};
 
   const handleCartoonSave = (svg) => {
     setCartoonAvatar(svg);

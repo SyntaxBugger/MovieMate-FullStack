@@ -122,6 +122,10 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
+        console.error(
+        "LOGIN CONTROLLER ERROR:",
+        error
+    );
         res.status(500).json({
             success: false,
             message: 'Login failed',

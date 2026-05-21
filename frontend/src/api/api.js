@@ -26,11 +26,12 @@ async function request(endpoint, { method = "GET", body } = {}) {
   };
 
   if (body) {
-    options.body = JSON.stringify(body);
+    options.body = JSON.stringify(body);                              
   }
 
   const res = await fetch(`${BASE_URL}/${endpoint}`, options);
   if (!res.ok) {
+   
     const errorBody = await res.json().catch(() => null);
     const message = errorBody?.message || errorBody?.error || res.statusText;
     throw new Error(message || `Request failed: ${endpoint}`);
