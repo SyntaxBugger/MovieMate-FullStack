@@ -16,10 +16,17 @@ const librarySchema = new mongoose.Schema(
     title: String,
     poster_path: String,
     media_type: String,
+
     category: {
         type: String,
         enum: ['favorites', 'watchlist', 'history'],
         default: 'favorites'
+    },
+
+    watchStatus: {
+        type: String,
+        enum: ['planning', 'watching', 'completed', 'dropped'],
+        default: 'planning'
     },
 
     watched: {

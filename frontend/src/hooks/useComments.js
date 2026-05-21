@@ -1,181 +1,178 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'moviemate_comments';
+const API =
+  'http://localhost:5000/api/comments';
 
-export const useComments = (movieId, movieTitle) => {
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const useComments = (
+  movieId,
+  movieTitle
+) => {
 
-  // Load comments from localStorage
+  const [comments, setComments] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
+
     if (!movieId) return;
-    
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const allComments = JSON.parse(stored);
-        const movieComments = allComments.filter(c => c.movieId === movieId);
-        setComments(movieComments.sort((a, b) => b.createdAt - a.createdAt));
-      } catch (error) {
-        console.error('Error loading comments:', error);
-        setComments([]);
-      }
-    }
-    setLoading(false);
+
+    fetchComments();
+
   }, [movieId]);
 
-  // Save all comments to localStorage
-  const saveComments = (allComments) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allComments));
-  };
+  const fetchComments = async () => {
 
-  // Add a new comment
-  const addComment = (text, userName, userAvatar = null) => {
-    if (!text.trim()) return null;
-    
-    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    
-    const newComment = {
-      id: Date.now(),
-      movieId,
-      movieTitle,
-      text: text.trim(),
-      userName: userName || 'Anonymous',
-      userAvatar,
-      createdAt: Date.now(),
-      likes: 0,
-      replies: []
-    };
-    
-    allComments.push(newComment);
-    saveComments(allComments);
-    
-    const updatedComments = [newComment, ...comments];
-    setComments(updatedComments);
-    
-    return newComment;
-  };
+    try {
 
-  // Reply to a comment
-  const addReply = (parentId, replyText, userName, userAvatar = null) => {
-    if (!replyText.trim()) return null;
-    
-    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    const commentIndex = allComments.findIndex(c => c.id === parentId);
-    
-    if (commentIndex !== -1) {
-      const newReply = {
-        id: Date.now(),
-        text: replyText.trim(),
-        userName: userName || 'Anonymous',
-        userAvatar,
-        createdAt: Date.now(),
-        likes: 0
-      };
-      
-      if (!allComments[commentIndex].replies) {
-        allComments[commentIndex].replies = [];
-      }
-      allComments[commentIndex].replies.push(newReply);
-      saveComments(allComments);
-      
-      // Update state
-      setComments(prev => {
-        const updated = [...prev];
-        const commentIdx = updated.findIndex(c => c.id === parentId);
-        if (commentIdx !== -1) {
-          if (!updated[commentIdx].replies) updated[commentIdx].replies = [];
-          updated[commentIdx].replies.push(newReply);
-        }
-        return updated;
-      });
-      
-      return newReply;
+      setLoading(true);
+
+      const res =
+        await fetch(
+          `${API}/${movieId}`
+        );
+
+      const data =
+        await res.json();
+
+      setComments(data);
+
+    } catch (err) {
+
+      console.error(
+        'Fetch comments error:',
+        err
+      );
+
+    } finally {
+
+      setLoading(false);
     }
-    return null;
   };
 
-  // Like a comment
-  const likeComment = (commentId, isReply = false, parentId = null) => {
-    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    
-    if (isReply && parentId) {
-      const comment = allComments.find(c => c.id === parentId);
-      if (comment && comment.replies) {
-        const reply = comment.replies.find(r => r.id === commentId);
-        if (reply) {
-          reply.likes = (reply.likes || 0) + 1;
-          saveComments(allComments);
-          
-          // Update state
-          setComments(prev => {
-            const updated = [...prev];
-            const commentIdx = updated.findIndex(c => c.id === parentId);
-            if (commentIdx !== -1 && updated[commentIdx].replies) {
-              const replyIdx = updated[commentIdx].replies.findIndex(r => r.id === commentId);
-              if (replyIdx !== -1) {
-                updated[commentIdx].replies[replyIdx].likes += 1;
-              }
-            }
-            return updated;
-          });
-        }
-      }
-    } else {
-      const comment = allComments.find(c => c.id === commentId);
-      if (comment) {
-        comment.likes = (comment.likes || 0) + 1;
-        saveComments(allComments);
-        
-        setComments(prev => {
-          const updated = [...prev];
-          const idx = updated.findIndex(c => c.id === commentId);
-          if (idx !== -1) {
-            updated[idx].likes += 1;
-          }
-          return updated;
+  const addComment = async (
+    text,
+    username
+  ) => {
+
+    try {
+
+      const res =
+        await fetch(API, {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body: JSON.stringify({
+            movieId,
+            mediaType: 'movie',
+            movieTitle,
+            username,
+            content: text
+          })
         });
-      }
+
+      const newComment =
+        await res.json();
+
+      setComments(prev => [
+        newComment,
+        ...prev
+      ]);
+
+    } catch (err) {
+
+      console.error(
+        'Add comment error:',
+        err
+      );
     }
   };
 
-  // Delete a comment
-  const deleteComment = (commentId, isReply = false, parentId = null) => {
-    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    
-    if (isReply && parentId) {
-      const comment = allComments.find(c => c.id === parentId);
-      if (comment && comment.replies) {
-        comment.replies = comment.replies.filter(r => r.id !== commentId);
-        saveComments(allComments);
-        
-        setComments(prev => {
-          const updated = [...prev];
-          const commentIdx = updated.findIndex(c => c.id === parentId);
-          if (commentIdx !== -1 && updated[commentIdx].replies) {
-            updated[commentIdx].replies = updated[commentIdx].replies.filter(r => r.id !== commentId);
+  const updateComment = async (
+    id,
+    content
+  ) => {
+
+    try {
+
+      const res =
+        await fetch(
+          `${API}/${id}`,
+          {
+            method: 'PATCH',
+
+            headers: {
+              'Content-Type':
+                'application/json'
+            },
+
+            body: JSON.stringify({
+              content
+            })
           }
-          return updated;
-        });
-      }
-    } else {
-      const filtered = allComments.filter(c => c.id !== commentId);
-      saveComments(filtered);
-      setComments(prev => prev.filter(c => c.id !== commentId));
+        );
+
+      const updated =
+        await res.json();
+
+      setComments(prev =>
+        prev.map(comment =>
+          comment.id === id
+            ? updated
+            : comment
+        )
+      );
+
+    } catch (err) {
+
+      console.error(
+        'Update comment error:',
+        err
+      );
     }
   };
 
-  const getCommentCount = () => {
-    return comments.length;
+  const deleteComment = async (
+    id
+  ) => {
+
+    try {
+
+      await fetch(
+        `${API}/${id}`,
+        {
+          method: 'DELETE'
+        }
+      );
+
+      setComments(prev =>
+        prev.filter(
+          comment =>
+            comment.id !== id
+        )
+      );
+
+    } catch (err) {
+
+      console.error(
+        'Delete comment error:',
+        err
+      );
+    }
   };
 
   return {
     comments,
     loading,
     addComment,
-    addReply,
-    likeComment,
+    updateComment,
     deleteComment,
-    getCommentCount
+    getCommentCount:
+      () => comments.length
   };
 };

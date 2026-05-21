@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  movieId    Int
+  mediaType  String
+  movieTitle String
+
+  username   String
+  content    String
+  rating     Int?
+
+  createdAt  DateTime @default(now())
+}

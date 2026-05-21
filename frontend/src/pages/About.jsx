@@ -19,63 +19,76 @@ export default function About({ selected, setPage, onOpen }) {
   const { getNote, saveNote, deleteNote } = useMovieNotes();
   
   const id = selected?.id;
-  const type = selected?.type ?? "movie";
+ const type =
+  selected?.type ||
+  selected?.media_type ||
+  "movie";
   const existingNote = getNote(id, type);
 
   // ✅ FIXED: Removed addToRecentlyViewed from dependencies
   useEffect(() => {
-    if (id && data && data.id && (data.title || data.name)) {
-      console.log("✅ Saving to recently viewed:", data.title || data.name);
-      
-      addToRecentlyViewed({
-        id: data.id,
-        title: data.title || data.name,
-        poster_path: data.poster_path,
-        media_type: type,
-        vote_average: data.vote_average
-      });
-    }
-  }, [id, data]);
+  if (!id) return;
 
-  useEffect(() => {
-    if (!id) return;
-    let mounted = true;
-    setLoading(true);
-    window.scrollTo(0, 0);
+  let mounted = true;
 
-    async function fetchAll() {
+  setLoading(true);
+  window.scrollTo(0, 0);
+
+  async function fetchAll() {
+    try {
+      let d;
+
+      if (type === "movie") {
+        d = await getMovieDetails(id);
+      } else {
+        d = await getTvDetails(id);
+      }
+
+      if (!mounted) return;
+
+      setData(d);
+
+      // Save to history without breaking page
       try {
-        if (type === "movie") {
-          const d = await getMovieDetails(id);
-          if (!mounted) return;
-          setData(d);
-          const c = await getCredits(id, "movie");
-          if (!mounted) return;
-          setCredits(c);
-          const r = await getRecommendations(id, "movie");
-          if (!mounted) return;
-          setRecs(r.results ?? []);
-        } else {
-          const d = await getTvDetails(id);
-          if (!mounted) return;
-          setData(d);
-          const c = await getCredits(id, "tv");
-          if (!mounted) return;
-          setCredits(c);
-          const r = await getRecommendations(id, "tv");
-          if (!mounted) return;
-          setRecs(r.results ?? []);
-        }
-      } catch (err) {
-        console.error("About fetch error", err);
-      } finally {
-        if (mounted) setLoading(false);
+        await addToHistory({
+          id: d.id,
+          title: d.title || d.name,
+          poster_path: d.poster_path,
+          media_type: type
+        });
+      } catch (historyErr) {
+        console.error("History error:", historyErr);
+      }
+
+      const c = await getCredits(id, type);
+
+      if (!mounted) return;
+
+      setCredits(c);
+
+      const r = await getRecommendations(id, type);
+
+      if (!mounted) return;
+
+      setRecs(r.results ?? []);
+
+    } catch (err) {
+      console.error("About fetch error:", err);
+
+    } finally {
+      if (mounted) {
+        setLoading(false);
       }
     }
+  }
 
-    fetchAll();
-    return () => { mounted = false; };
-  }, [id, type]);
+  fetchAll();
+
+  return () => {
+    mounted = false;
+  };
+
+}, [id, type]);
 
   const getMovieObject = () => {
     return {
@@ -88,19 +101,33 @@ export default function About({ selected, setPage, onOpen }) {
     };
   };
 
-  const handleFav = () => {
-    if (!data) return;
-    addToFavorites(getMovieObject());
-  };
+  const handleFav = async () => {
+  if (!data) return;
 
-  const handleWatchlist = () => {
-    if (!data) return;
-    addToWatchlist(getMovieObject());
-  };
+  console.log("FAV BUTTON CLICKED");
 
+  try {
+    await addToFavorites(getMovieObject());
+    console.log("FAVORITE SUCCESS");
+  } catch (err) {
+    console.error("FAVORITE ERROR:", err);
+  }
+};
+
+const handleWatchlist = async () => {
+  if (!data) return;
+
+  console.log("WATCHLIST BUTTON CLICKED");
+
+  try {
+    await addToWatchlist(getMovieObject());
+    console.log("WATCHLIST SUCCESS");
+  } catch (err) {
+    console.error("WATCHLIST ERROR:", err);
+  }
+};
   const handleTrailer = () => {
     if (!data) return;
-    addToHistory(getMovieObject());
     const query = `${data.title || data.name} trailer`;
     window.open(`https://www.youtube.com/results?search_query=${query}`, "_blank");
   };
@@ -150,16 +177,64 @@ export default function About({ selected, setPage, onOpen }) {
           <div className={styles.showBoxes}>
             <span className={styles.boxItem}>{type === "tv" ? "TV Series" : "Movie"}</span>
             {runtime && <span className={styles.boxItem}>{runtime}m</span>}
-            <span className={styles.boxItem}>⭐ {rating}</span>
+            <span className={styles.boxItem}> {rating}</span>
           </div>
 
           <div className={styles.actions}>
             <button className={styles.btnWatch} onClick={handleTrailer}>
               Trailer
             </button>
-            <button className={styles.btnList} onClick={handleWatchlist}>
-              + Watchlist
-            </button>
+            <div className={styles.watchStatusButtons}>
+
+  <button
+    className={styles.btnList}
+    onClick={() =>
+      addToWatchlist(
+        getMovieObject(),
+        "planning"
+      )
+    }
+  >
+     Plan to Watch
+  </button>
+
+  <button
+    className={styles.btnList}
+    onClick={() =>
+      addToWatchlist(
+        getMovieObject(),
+        "watching"
+      )
+    }
+  >
+    Watching
+  </button>
+
+  <button
+    className={styles.btnList}
+    onClick={() =>
+      addToWatchlist(
+        getMovieObject(),
+        "completed"
+      )
+    }
+  >
+    Completed
+  </button>
+
+  <button
+    className={styles.btnList}
+    onClick={() =>
+      addToWatchlist(
+        getMovieObject(),
+        "dropped"
+      )
+    }
+  >
+    Dropped
+  </button>
+
+</div>
             <button className={styles.favBtn} onClick={handleFav}>
               ❤
             </button>

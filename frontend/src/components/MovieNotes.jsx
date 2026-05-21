@@ -6,7 +6,6 @@ import { useNotifications } from '../hooks/useNotifications';  // ✅ ADD THIS
 const MovieNotes = ({ movie }) => {
   const [rating, setRating] = useState(null);
   const [noteText, setNoteText] = useState('');
-  const [isFavorite, setIsFavorite] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
   
@@ -21,55 +20,27 @@ const MovieNotes = ({ movie }) => {
     if (movie.existingNote) {
       setRating(movie.existingNote.rating);
       setNoteText(movie.existingNote.note || '');
-      setIsFavorite(movie.existingNote.isFavorite || false);
       setShowEditor(!!(movie.existingNote.note || movie.existingNote.rating));
     } else {
       setRating(null);
       setNoteText('');
-      setIsFavorite(false);
       setShowEditor(false);
     }
   }, [movie?.id]);
 
   // Save to localStorage
-  const saveToLocalStorage = (newRating, newNote, newFavorite) => {
-    try {
-      const existingNotes = JSON.parse(localStorage.getItem('moviemate_movie_notes') || '[]');
-      
-      const filteredNotes = existingNotes.filter(
-        n => !(n.mediaId === movie.id && n.mediaType === movie.mediaType)
-      );
-      
-      const newNoteObj = {
-        mediaId: movie.id,
-        mediaType: movie.mediaType,
-        title: movie.title,
-        poster_path: movie.poster_path,
-        rating: newRating,
-        note: newNote,
-        isFavorite: newFavorite,
-        updatedAt: new Date().toISOString()
-      };
-      
-      const updatedNotes = [newNoteObj, ...filteredNotes];
-      localStorage.setItem('moviemate_movie_notes', JSON.stringify(updatedNotes));
-      
-      setSaveStatus('✓ Saved!');
-      setTimeout(() => setSaveStatus(''), 2000);
-      
-      if (movie.onSave) {
-        movie.onSave(movie.id, movie.mediaType, { rating: newRating, note: newNote, isFavorite: newFavorite });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setSaveStatus('❌ Failed');
-      setTimeout(() => setSaveStatus(''), 2000);
-    }
-  };
-
+  
   const handleRatingChange = (newRating) => {
     setRating(newRating);
-    saveToLocalStorage(newRating, noteText, isFavorite);
+    movie.onSave(
+  movie.id,
+  movie.mediaType,
+  {
+    rating: newRating,
+    note: noteText,
+    isFavorite
+  }
+);
     // ✅ ADD NOTIFICATION FOR RATING
     addNotification(
       'Movie Rated', 
@@ -87,7 +58,18 @@ const MovieNotes = ({ movie }) => {
       addNotification('Cannot Save', 'Please add a rating or write a note', 'warning');
       return;
     }
-    saveToLocalStorage(rating, noteText, isFavorite);
+    movie.onSave(
+  movie.id,
+  movie.mediaType,
+  {
+    rating,
+    note: noteText,
+  }
+);
+
+setSaveStatus('✓ Saved!');
+setTimeout(() => setSaveStatus(''), 2000);
+   
     // ✅ ADD NOTIFICATION FOR SAVING NOTE
     addNotification(
       'Note Saved', 
@@ -100,9 +82,9 @@ const MovieNotes = ({ movie }) => {
     if (window.confirm('Delete this note?')) {
       setRating(null);
       setNoteText('');
-      setIsFavorite(false);
+
       setShowEditor(false);
-      saveToLocalStorage(null, '', false);
+      movie.onDelete(movie.id, movie.mediaType);
       // ✅ ADD NOTIFICATION FOR DELETING NOTE
       addNotification(
         'Note Deleted', 
@@ -112,25 +94,6 @@ const MovieNotes = ({ movie }) => {
     }
   };
 
-  const handleToggleFavorite = () => {
-    const newFavorite = !isFavorite;
-    setIsFavorite(newFavorite);
-    saveToLocalStorage(rating, noteText, newFavorite);
-    // ✅ ADD NOTIFICATION FOR FAVORITE
-    if (newFavorite) {
-      addNotification(
-        'Added to Favorites', 
-        `"${movie.title}" added to your favorites`, 
-        'success'
-      );
-    } else {
-      addNotification(
-        'Removed from Favorites', 
-        `"${movie.title}" removed from favorites`, 
-        'info'
-      );
-    }
-  };
 
   return (
     <div className={styles.notesContainer}>
@@ -163,18 +126,7 @@ const MovieNotes = ({ movie }) => {
           size="medium"
         />
         {rating && <span className={styles.ratingValue}>{rating}/10</span>}
-      </div>
-
-      {/* Favorite Section */}
-      <div className={styles.favoriteSection}>
-        <button 
-          className={`${styles.favoriteBtn} ${isFavorite ? styles.active : ''}`}
-          onClick={handleToggleFavorite}
-        >
-          <i className="fas fa-heart"></i>
-          {isFavorite ? ' Added to Favorites' : ' Add to Favorites'}
-        </button>
-      </div>
+      </div>      
 
       {/* Textarea Section */}
       {showEditor && (

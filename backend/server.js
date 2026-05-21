@@ -14,9 +14,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Create server + socket
 const server = http.createServer(app);
-const io = new Server(server);
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"]
+    }
+});
 
 app.set("io", io);
 
@@ -25,6 +30,7 @@ const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 
 // Import Routes
+const commentRoutes = require('./routes/commentRoutes');
 const authRoutes = require('./routes/authRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const tmdbRoutes = require('./routes/tmdbRoutes');
@@ -65,6 +71,7 @@ let activeConnections = 0;
 
 io.on("connection", (socket) => {
     activeConnections++;
+    io.emit('onlineUsers', activeConnections);
     const timestamp = new Date().toLocaleTimeString();
     
 
@@ -85,6 +92,7 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         activeConnections--;
+        io.emit('onlineUsers', activeConnections);
         const disconnectTime = new Date().toLocaleTimeString();
         
         console.log("\n========================================");
@@ -117,6 +125,7 @@ app.get('/dashboard', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/tmdb', tmdbRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Home Route
 app.get('/', (req, res) => {

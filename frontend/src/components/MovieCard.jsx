@@ -10,7 +10,17 @@ export default function MovieCard({ movie, onClick }) {
   return (
     <button
       className={styles.card}
-      onClick={() => onClick?.(movie)}
+     onClick={() =>
+  onClick?.({
+    ...movie,
+    media_type:
+      movie.media_type ||
+      (movie.first_air_date ? "tv" : "movie"),
+    type:
+      movie.type ||
+      (movie.first_air_date ? "tv" : "movie")
+  })
+}
       type="button"
       aria-label={`Open details for ${title}`}
       style={{ background: "none", border: "none", textAlign: "left", padding: 0 }}
