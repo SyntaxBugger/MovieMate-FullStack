@@ -22,12 +22,20 @@ if (process.env.ALLOWED_ORIGINS) {
     allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(',').map((url) => url.trim()));
 }
 
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;
+    if (allowedOrigins.includes(origin)) return true;
+    if (origin.endsWith('.vercel.app')) return true;
+    if (origin.endsWith('.onrender.com')) return true;
+    return false;
+};
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
         origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
+            if (isAllowedOrigin(origin)) {
                 return callback(null, true);
             }
             return callback(new Error('Origin not allowed by CORS'), false);
@@ -74,13 +82,16 @@ app.use(logger);
 app.use(cookieParser());
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
     return callback(new Error('Origin not allowed by CORS'), false);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
 // Serve Static Files
