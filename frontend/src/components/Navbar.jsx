@@ -75,6 +75,7 @@ export default function Navbar({ setPage, page, onSearch }) {
 
           {/* LEFT SECTION - Logo */}
           <div className={styles.leftSection}>
+            <div>🟢 {onlineUsers} Online</div>
             <button
               className={styles.logo}
               onClick={goHome}
@@ -184,7 +185,7 @@ export default function Navbar({ setPage, page, onSearch }) {
 
           {/* RIGHT SIDE - Search + Avatar + Notifications + Login/Logout */}
           <div className={styles.rightSection}>
-            <div>🟢 {onlineUsers} Online</div>
+            
             <div className={styles.searchContainer}>
               <i 
                 className={`fas fa-search ${styles.searchIcon}`} 

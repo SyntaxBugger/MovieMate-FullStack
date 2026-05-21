@@ -3,16 +3,23 @@
 /* ========================== */
 
 .mainHeader {
-    box-shadow: var(--shadow);
     position: sticky;
     top: 0;
-    border-bottom: 1px solid var(--bg-light);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-    padding: 10px 4rem;
-    background: rgba(0, 0, 0, 0.4);
-}
 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 1.5rem;
+
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid var(--bg-light);
+    box-shadow: var(--shadow);
+
+    z-index: 100;
+}
 /* ========================== */
 /*          NAVBAR            */
 /* ========================== */
