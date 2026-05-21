@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.4.2",
+    "@dicebear/core": "^9.4.2",
+    "@gschoppe/avataaars": "^2.2.7",
     "axios": "^1.16.0",
     "chart.js": "^4.5.1",
     "dotenv": "^17.4.2",
     "react": "^19.2.0",
+    "react-avatar": "^5.0.4",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0"

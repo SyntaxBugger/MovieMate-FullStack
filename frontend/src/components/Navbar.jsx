@@ -1,16 +1,26 @@
 import { useState, useEffect } from 'react';
 import styles from "./Navbar.module.css";
 import logoVideo from "../assets/movielight.mp4";
-import NotificationBell from './NotificationBell';  // ✅ ADD THIS
+import NotificationBell from './NotificationBell';
+import Avatar from './Avatar';  // ✅ ADD THIS
 
 export default function Navbar({ setPage, page, onSearch }) {
   
   const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const user = localStorage.getItem("user"); 
     setIsLoggedIn(!!user);
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        setUserName(userData.name || userData.email || 'User');
+      } catch {
+        setUserName('User');
+      }
+    }
   }, [page]);
 
   const getLinkClass = (pageName) => {
@@ -39,6 +49,9 @@ export default function Navbar({ setPage, page, onSearch }) {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("user_avatar");
+    localStorage.removeItem("avatar_type");
+    localStorage.removeItem("cartoon_avatar_svg");
     setIsLoggedIn(false);
     goHome();
   };
@@ -96,7 +109,7 @@ export default function Navbar({ setPage, page, onSearch }) {
               </button>
             </li>
             
-            {/* MY LIBRARY LINK (Only shows if logged in) */}
+            {/* MY LIBRARY LINK */}
             {isLoggedIn && (
               <li className={styles.navItem}>
                 <button
@@ -111,7 +124,7 @@ export default function Navbar({ setPage, page, onSearch }) {
               </li>
             )}
 
-            {/* MY NOTES LINK (Only shows if logged in) */}
+            {/* MY NOTES LINK */}
             {isLoggedIn && (
               <li className={styles.navItem}>
                 <button
@@ -126,7 +139,7 @@ export default function Navbar({ setPage, page, onSearch }) {
               </li>
             )}
 
-            {/* ANALYTICS LINK (Only shows if logged in) */}
+            {/* ANALYTICS LINK */}
             {isLoggedIn && (
               <li className={styles.navItem}>
                 <button
@@ -140,9 +153,24 @@ export default function Navbar({ setPage, page, onSearch }) {
                 </button>
               </li>
             )}
+
+            {/* PROFILE LINK */}
+            {isLoggedIn && (
+              <li className={styles.navItem}>
+                <button
+                  className={getLinkClass("profile")}
+                  onClick={() => {
+                    onSearch("");
+                    setPage("profile");
+                  }}
+                >
+                  <i className="fas fa-user"></i> Profile
+                </button>
+              </li>
+            )}
           </ul>
 
-          {/* RIGHT SIDE - Search + Notifications + Login/Logout */}
+          {/* RIGHT SIDE - Search + Avatar + Notifications + Login/Logout */}
           <div className={styles.rightSection}>
             <div className={styles.searchContainer}>
               <i 
@@ -159,7 +187,10 @@ export default function Navbar({ setPage, page, onSearch }) {
               />
             </div>
             
-            {/* ✅ ADD NOTIFICATION BELL (Only shows if logged in) */}
+            {/* ✅ AVATAR - Only shows if logged in */}
+            {isLoggedIn && <Avatar name={userName} size="medium" />}
+            
+            {/* ✅ NOTIFICATION BELL */}
             {isLoggedIn && <NotificationBell />}
             
             {isLoggedIn ? (
