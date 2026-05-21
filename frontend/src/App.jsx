@@ -1,12 +1,9 @@
-import { useState } from "react";
-import { Toaster } from 'react-hot-toast';
 import { useState, useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from 'react-hot-toast';
 import toast from "react-hot-toast";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-
 import Movies from "./pages/Movies";
 import TvShows from "./pages/TvShows";
 import About from "./pages/About";
@@ -14,101 +11,87 @@ import Main from "./pages/Main";
 import MyLibrary from "./pages/MyLibrary";
 import MyNotes from "./pages/MyNotes";
 import Analytics from "./pages/Analytics";
-import Profile from "./pages/Profile";  // ✅ ADD THIS
-
+import Profile from "./pages/Profile";
 import LoginPage from "./LoginPage";
 import RegPage from "./RegPage";
 
 import socket from "./socket";
 
 export default function App() {
-
-  const [page, setPage] =
-    useState("home");
-
-  const [selected, setSelected] =
-    useState(null);
-
-  const [searchQuery, setSearchQuery] =
-    useState("");
+  const [page, setPage] = useState("home");
+  const [selected, setSelected] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const openAboutPage = (item) => {
-
-    const type =
-      item.media_type ||
-      (item.first_air_date
-        ? "tv"
-        : "movie");
-
-    setSelected({
-      ...item,
-      type
-    });
-
+    const type = item.media_type || (item.first_air_date ? "tv" : "movie");
+    setSelected({ ...item, type });
     setPage("about");
   };
 
   const changePage = (newPage) => {
-
     setSearchQuery("");
-
     setPage(newPage);
-
     setSelected(null);
   };
 
-  const hideNavbarFooter =
-    page === "login" ||
-    page === "register";
+  const hideNavbarFooter = page === "login" || page === "register";
 
+  // Socket.io connection and event listeners
   useEffect(() => {
+    // Connect to socket (if not already connected)
+    if (!socket.connected) {
+      socket.connect();
+    }
 
+    // Listen for activity notifications
     socket.on("activity", (data) => {
-
       let message = "";
-
-      if (
-        data.category ===
-        "favorites"
-      ) {
-        message =
-          `❤️ Someone favorited ${data.title}`;
+      if (data.category === "favorites") {
+        message = `❤️ ${data.userName || 'Someone'} favorited ${data.title}`;
       }
-
-      if (
-        data.category ===
-        "watchlist"
-      ) {
-        message =
-          `📌 Someone added ${data.title} to watchlist`;
+      if (data.category === "watchlist") {
+        message = `📌 ${data.userName || 'Someone'} added ${data.title} to watchlist`;
       }
-
+      if (data.category === "comment") {
+        message = `💬 ${data.userName || 'Someone'} commented on ${data.title}`;
+      }
+      if (data.category === "rating") {
+        message = `⭐ ${data.userName || 'Someone'} rated ${data.title} ${data.rating}/10`;
+      }
       if (message) {
-        toast(message);
+        toast(message, {
+          duration: 4000,
+          icon: '🔔',
+        });
       }
     });
 
-    socket.on(
-      "onlineUsers",
-      (count) => {
-        console.log(
-          "Online Users:",
-          count
-        );
-      }
-    );
+    // Listen for online users count
+    socket.on("onlineUsers", (count) => {
+      console.log("👥 Online Users:", count);
+    });
 
+    // Listen for connection events
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
+
+    // Cleanup on unmount
     return () => {
       socket.off("activity");
       socket.off("onlineUsers");
+      socket.off("connect");
+      socket.off("disconnect");
     };
-
   }, []);
 
   return (
     <>
       {/* TOAST NOTIFICATIONS CONTAINER */}
-      <Toaster 
       <Toaster
         position="top-right"
         toastOptions={{
@@ -117,78 +100,35 @@ export default function App() {
             background: "#112240",
             color: "#ffffff",
             borderRadius: "12px",
-            borderLeft:
-              "4px solid #2ec4b6",
+            borderLeft: "4px solid #2ec4b6",
           },
         }}
       />
 
       {!hideNavbarFooter && (
-        <Navbar
-          setPage={changePage}
-          page={page}
-          onSearch={setSearchQuery}
-        />
+        <Navbar setPage={changePage} page={page} onSearch={setSearchQuery} />
       )}
 
-      {page === "home" && (
-        <Main
-          onOpen={openAboutPage}
-          searchQuery={searchQuery}
-        />
-      )}
-
-      {page === "movies" && (
-        <Movies onOpen={openAboutPage} />
-      )}
-
-      {page === "tvshows" && (
-        <TvShows onOpen={openAboutPage} />
-      )}
-
-      {page === "library" && (
-        <MyLibrary onOpen={openAboutPage} />
-      )}
-
-      {page === "mynotes" && (
-        <MyNotes onOpen={openAboutPage} />
-      )}
-
+      {page === "home" && <Main onOpen={openAboutPage} searchQuery={searchQuery} />}
       {page === "movies" && <Movies onOpen={openAboutPage} />}
       {page === "tvshows" && <TvShows onOpen={openAboutPage} />}
       {page === "library" && <MyLibrary onOpen={openAboutPage} />}
       {page === "mynotes" && <MyNotes onOpen={openAboutPage} />}
       {page === "analytics" && <Analytics onOpen={openAboutPage} />}
       
-      {/* ✅ PROFILE ROUTE */}
+      {/* PROFILE ROUTE */}
       {page === "profile" && <Profile setPage={changePage} />}
       
+      {/* ABOUT ROUTE */}
       {page === "about" && selected && (
         <About selected={selected} setPage={changePage} onOpen={openAboutPage} />
-      {page === "analytics" && (
-        <Analytics onOpen={openAboutPage} />
       )}
 
-      {page === "about" &&
-        selected && (
-          <About
-            selected={selected}
-            setPage={changePage}
-            onOpen={openAboutPage}
-          />
-        )}
+      {/* AUTH ROUTES */}
+      {page === "login" && <LoginPage setPage={changePage} />}
+      {page === "register" && <RegPage setPage={changePage} />}
 
-      {page === "login" && (
-        <LoginPage setPage={changePage} />
-      )}
-
-      {page === "register" && (
-        <RegPage setPage={changePage} />
-      )}
-
-      {!hideNavbarFooter && (
-        <Footer setPage={changePage} />
-      )}
+      {!hideNavbarFooter && <Footer setPage={changePage} />}
     </>
   );
 }

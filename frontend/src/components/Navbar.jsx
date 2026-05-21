@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from "./Navbar.module.css";
 import logoVideo from "../assets/movielight.mp4";
-import NotificationBell from './NotificationBell';
 import Avatar from './Avatar';  // ✅ ADD THIS
 import NotificationBell from './NotificationBell';  // ✅ ADD THIS
 import socket from '../socket';
