@@ -58,9 +58,12 @@ app.use(express.json());
 app.use(logger);
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
+  origin: [
+    'http://localhost:5173',
+    'https://YOUR-VERCEL-URL.vercel.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
 }));
 
 // Serve Static Files
