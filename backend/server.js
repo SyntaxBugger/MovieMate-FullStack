@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://movie-mate-full-stack.vercel.app'
+    'https://movie-mate-full-stack.vercel.app',
+    'https://movie-mate-full-stack-96gack973-rangan-biswas-projects.vercel.app'
 ];
 if (process.env.ALLOWED_ORIGINS) {
     allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(',').map((url) => url.trim()));
@@ -25,7 +26,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(new Error('Origin not allowed by CORS'), false);
+        },
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -67,7 +73,12 @@ app.use(express.json());
 app.use(logger);
 app.use(cookieParser());
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin not allowed by CORS'), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
 }));
