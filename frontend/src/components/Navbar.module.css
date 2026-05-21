@@ -5,21 +5,14 @@
 .mainHeader {
     position: sticky;
     top: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 10px 1.5rem;
-
-    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    background: rgba(10, 25, 47, 0.4);
     backdrop-filter: blur(10px);
-
-    border-bottom: 1px solid var(--bg-light);
-    box-shadow: var(--shadow);
-
-    z-index: 100;
+    border-bottom: 1px solid rgba(46, 196, 182, 0.15);
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
+
 /* ========================== */
 /*          NAVBAR            */
 /* ========================== */
@@ -28,7 +21,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 10px 24px;
+    gap: 20px;
 }
 
 /* -------------------------- */
@@ -38,21 +34,47 @@
 .leftSection {
     display: flex;
     align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    text-decoration: none;
-    gap: 12px;
-    transition: var(--transition);
+    cursor: pointer;
+    background: none;
+    border: none;
 }
 
 .logo video {
-    width: 250px;
-    height: 80px;
-    object-fit: contain;
-    border-radius: 8px;
+    width: 140px;
+    height: auto;
+}
+
+/* Online Badge */
+.onlineBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(46, 196, 182, 0.15);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: #2ec4b6;
+    backdrop-filter: blur(4px);
+}
+
+.onlineDot {
+    width: 8px;
+    height: 8px;
+    background-color: #2ec4b6;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); }
 }
 
 /* -------------------------- */
@@ -62,35 +84,46 @@
 .middleSection {
     display: flex;
     list-style: none;
-    gap: 4rem;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center;
+}
+
+.navItem {
+    list-style: none;
 }
 
 .navLink {
-    text-decoration: none;
-    color: var(--text-light);
+    color: var(--text-light, #e6e6e6);
     font-weight: 500;
     padding: 8px 0;
-    position: relative;
-    transition: var(--transition);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     background: none;
     border: none;
     cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
-.navLink:hover,
+.navLink:hover {
+    color: var(--secondary, #2ec4b6);
+}
+
 .active {
-    color: var(--secondary);
+    color: var(--secondary, #2ec4b6);
 }
 
 .active::after {
     content: '';
     position: absolute;
-    bottom: -2px;
+    bottom: -4px;
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, var(--secondary), var(--accent));
+    background: linear-gradient(90deg, var(--secondary, #2ec4b6), var(--accent, #ff9f1c));
     border-radius: 2px;
 }
 
@@ -101,91 +134,75 @@
 .rightSection {
     display: flex;
     align-items: center;
-    gap: 2.5rem;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
-/* ========================== */
-/*        SEARCH BAR          */
-/* ========================== */
-
+/* Search Bar */
 .searchContainer {
     position: relative;
 }
 
 .searchInput {
-    padding: 12px 20px 12px 45px;
+    padding: 8px 14px 8px 36px;
     border-radius: 30px;
-    border: 1px solid var(--bg-light);
-    background-color: var(--primary-light);
-    color: var(--text);
-    width: 310px;
-    transition: var(--transition);
-    font-size: 0.95rem;
+    border: 1px solid rgba(46, 196, 182, 0.3);
+    background: rgba(23, 42, 69, 0.6);
+    backdrop-filter: blur(4px);
+    color: white;
+    width: 200px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
 }
 
 .searchInput:focus {
     outline: none;
-    border-color: var(--secondary);
-    background-color: var(--card);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    border-color: #2ec4b6;
+    background: rgba(23, 42, 69, 0.9);
 }
 
 .searchInput::placeholder {
-    color: var(--text-muted);
+    color: #8892b0;
 }
 
 .searchIcon {
     position: absolute;
-    left: 18px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
-    font-size: 1rem;
+    color: #8892b0;
+    font-size: 0.85rem;
+    pointer-events: none;
 }
 
-/* Login / Signup Button */
+/* Buttons */
 .btn {
-    padding: 12px 24px;
-    border-radius: var(--radius);
+    padding: 6px 16px;
+    border-radius: 30px;
     font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    border: 2px solid var(--secondary);
+    font-size: 0.85rem;
+    border: 1.5px solid #2ec4b6;
     background: transparent;
-    color: var(--secondary);
+    backdrop-filter: blur(4px);
+    color: #2ec4b6;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
 }
 
 .btn:hover {
-    background: var(--secondary);
-    color: var(--primary);
-}
-
-.btn a {
-    text-decoration: none;
-    color: inherit;
+    background: #2ec4b6;
+    color: #0a192f;
+    transform: translateY(-2px);
 }
 
 /* Remove default button styles */
-.navLink,
-.logo button,
-.logoBtn,
-.navItem button {
+.navLink, .logo, .navItem button {
     background: none !important;
     border: none !important;
-    color: inherit !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    cursor: pointer !important;
-    font: inherit !important;
 }
 
-/* remove weird outline */
-.navLink:focus,
-.navItem button:focus {
+.navLink:focus, .logo:focus {
     outline: none !important;
 }
 
@@ -193,85 +210,90 @@
 /*     RESPONSIVE HEADER      */
 /* ========================== */
 
-/* ---------- TABLETS ---------- */
-@media (max-width: 1024px) {
-
-    .mainHeader {
-        padding: 10px 2rem;
-    }
-
-    .middleSection {
-        gap: 2.5rem;
-    }
-
-    .searchInput {
-        width: 240px;
-    }
-
-    .logo video {
-        width: 180px;
-        height: 60px;
-    }
+/* Laptop */
+@media (max-width: 1200px) {
+    .navbar { gap: 15px; }
+    .logo video { width: 130px; }
+    .searchInput { width: 180px; }
+    .middleSection { gap: 20px; }
 }
 
-/* ---------- MOBILE ---------- */
+/* Tablet */
+@media (max-width: 992px) {
+    .navbar { padding: 8px 16px; }
+    .logo video { width: 120px; }
+    .searchInput { width: 160px; }
+    .middleSection { gap: 15px; }
+    .navLink { font-size: 0.9rem; }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-
     .navbar {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .middleSection {
         flex-wrap: wrap;
         justify-content: center;
-        gap: 1.2rem;
+        padding: 10px 16px;
+        gap: 10px;
     }
-
-    .searchInput {
+    
+    .leftSection {
+        order: 1;
+    }
+    
+    .middleSection {
+        order: 3;
         width: 100%;
-        max-width: 300px;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
     }
-
+    
     .rightSection {
-        flex-direction: column;
-        gap: 1rem;
+        order: 2;
     }
-
+    
     .logo video {
-        width: 160px;
-        height: 50px;
+        width: 110px;
+    }
+    
+    .searchInput {
+        width: 140px;
+        padding: 6px 10px 6px 32px;
+        font-size: 0.8rem;
+    }
+    
+    .searchIcon {
+        left: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .btn {
+        padding: 5px 12px;
+        font-size: 0.8rem;
     }
 }
 
-/* ---------- SMALL PHONES ---------- */
-@media (max-width: 480px) {
-
-    .mainHeader {
-        padding: 8px 1rem;
-    }
-
-    .contentTitle {
-        font-size: 1.8rem;
-    }
-
+/* Small Mobile */
+@media (max-width: 576px) {
     .middleSection {
-        gap: 1rem;
+        gap: 8px;
     }
-
+    
+    .navLink {
+        font-size: 0.75rem;
+    }
+    
     .searchInput {
-        width: 100%;
-        font-size: 0.85rem;
-        padding: 10px 18px 10px 40px;
+        width: 120px;
     }
-
-    .logo video {
-        width: 130px;
-        height: 40px;
+    
+    .onlineBadge {
+        padding: 2px 6px;
+        font-size: 0.6rem;
     }
-
-    .btn {
-        padding: 10px 18px;
-        font-size: 0.9rem;
+    
+    .onlineDot {
+        width: 6px;
+        height: 6px;
     }
 }
