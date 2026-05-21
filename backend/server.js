@@ -17,7 +17,10 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: [
+            "http://localhost:5173",
+            "https://movie-mate-full-stack.vercel.app"
+        ],
         methods: ["GET", "POST"]
     }
 });
@@ -60,7 +63,7 @@ app.use(cookieParser());
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://YOUR-VERCEL-URL.vercel.app'
+    'https://movie-mate-full-stack.vercel.app'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
