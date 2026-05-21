@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Toaster } from 'react-hot-toast';
 import { useState, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -12,6 +14,7 @@ import Main from "./pages/Main";
 import MyLibrary from "./pages/MyLibrary";
 import MyNotes from "./pages/MyNotes";
 import Analytics from "./pages/Analytics";
+import Profile from "./pages/Profile";  // ✅ ADD THIS
 
 import LoginPage from "./LoginPage";
 import RegPage from "./RegPage";
@@ -104,6 +107,8 @@ export default function App() {
 
   return (
     <>
+      {/* TOAST NOTIFICATIONS CONTAINER */}
+      <Toaster 
       <Toaster
         position="top-right"
         toastOptions={{
@@ -149,6 +154,17 @@ export default function App() {
         <MyNotes onOpen={openAboutPage} />
       )}
 
+      {page === "movies" && <Movies onOpen={openAboutPage} />}
+      {page === "tvshows" && <TvShows onOpen={openAboutPage} />}
+      {page === "library" && <MyLibrary onOpen={openAboutPage} />}
+      {page === "mynotes" && <MyNotes onOpen={openAboutPage} />}
+      {page === "analytics" && <Analytics onOpen={openAboutPage} />}
+      
+      {/* ✅ PROFILE ROUTE */}
+      {page === "profile" && <Profile setPage={changePage} />}
+      
+      {page === "about" && selected && (
+        <About selected={selected} setPage={changePage} onOpen={openAboutPage} />
       {page === "analytics" && (
         <Analytics onOpen={openAboutPage} />
       )}

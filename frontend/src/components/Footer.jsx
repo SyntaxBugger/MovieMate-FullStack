@@ -1,70 +1,92 @@
-import styles from "./Footer.module.css";
-import tmdbLogo from "../assets/tmdb-logo.svg"; 
+import React from 'react';
+import styles from './Footer.module.css';
+import tmdbLogo from '../assets/tmdb-logo.svg'; // Import TMDB logo
 
-export default function Footer({ setPage }) {
+const Footer = ({ setPage }) => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className={styles.mainFooter}>
-      <div className="container">
+    <footer className={styles.footer}>
+      <div className={styles.container}>
         <div className={styles.footerContent}>
           
-          {/* SECTION 1 */}
+          {/* Logo Section */}
           <div className={styles.footerSection}>
-            <h3>MovieMate</h3>
-            <p className={styles.footerDescription}>
-              Your ultimate destination for discovering and exploring movies and TV shows from around the world.
+            <h3 className={styles.logo}>MovieMate</h3>
+            <p className={styles.description}>
+              Your ultimate destination for discovering movies and TV shows. 
+              Find ratings, reviews, and where to watch all in one place.
             </p>
-
-            {/* UPDATED SOCIAL ICONS */}
             <div className={styles.socialLinks}>
-              <a href="#" className={styles.socialLink}>
-                <i className="fa-brands fa-facebook"></i>
+              <a href="#" className={styles.socialLink} aria-label="Facebook">
+                <i className="fab fa-facebook-f"></i>
               </a>
-              <a href="#" className={styles.socialLink}>
-                <i className="fa-brands fa-twitter"></i>
+              <a href="#" className={styles.socialLink} aria-label="Twitter">
+                <i className="fab fa-twitter"></i>
               </a>
-              <a href="#" className={styles.socialLink}>
-                <i className="fa-brands fa-instagram"></i>
+              <a href="#" className={styles.socialLink} aria-label="Instagram">
+                <i className="fab fa-instagram"></i>
               </a>
-               <a href="#" className={styles.socialLink}>
-                <i className="fa-brands fa-telegram"></i>
+              <a href="#" className={styles.socialLink} aria-label="YouTube">
+                <i className="fab fa-youtube"></i>
               </a>
             </div>
           </div>
 
-          {/* SECTION 2 */}
+          {/* Quick Links */}
           <div className={styles.footerSection}>
             <h3>Quick Links</h3>
             <ul className={styles.footerLinks}>
               <li><button onClick={() => setPage("home")}>Home</button></li>
               <li><button onClick={() => setPage("movies")}>Movies</button></li>
               <li><button onClick={() => setPage("tvshows")}>TV Shows</button></li>
+              <li><button onClick={() => setPage("library")}>My Library</button></li>
             </ul>
           </div>
 
-          {/* SECTION 3 */}
+          {/* Explore Section */}
           <div className={styles.footerSection}>
-            <h3>Genres</h3>
+            <h3>Explore</h3>
             <ul className={styles.footerLinks}>
-              <li><button onClick={() => setPage("genre-action")}>Action</button></li>
-              <li><button onClick={() => setPage("genre-comedy")}>Comedy</button></li>
-              <li><button onClick={() => setPage("genre-drama")}>Drama</button></li>
-              <li><button onClick={() => setPage("genre-sci-fi")}>Sci-Fi</button></li>
-              <li><button onClick={() => setPage("genre-horror")}>Horror</button></li>
+              <li><button onClick={() => setPage("analytics")}>Analytics</button></li>
+              <li><button onClick={() => setPage("mynotes")}>My Notes</button></li>
+              <li><button onClick={() => setPage("profile")}>Profile</button></li>
+              <li><a href="#">Trending</a></li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div className={styles.footerSection}>
+            <h3>Contact</h3>
+            <ul className={styles.contactInfo}>
+              <li>
+                <i className="fas fa-envelope"></i>
+                <span>support@moviemate.com</span>
+              </li>
+              <li>
+                <i className="fas fa-phone"></i>
+                <span>+1 (555) 123-4567</span>
+              </li>
+              <li>
+                <i className="fas fa-map-marker-alt"></i>
+                <span>Movie City, CA 90210</span>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* BOTTOM BAR */}
+        {/* Bottom Bar */}
         <div className={styles.footerBottom}>
-          <p>&copy; 2025 MovieMate. All rights reserved.</p>
+          <p>&copy; {currentYear} MovieMate. All rights reserved.</p>
 
           <div className={styles.tmdbCredit}>
             <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
-            <img src={tmdbLogo} alt="The Movie Database" className={styles.tmdbLogo} />
+            {tmdbLogo && <img src={tmdbLogo} alt="The Movie Database" className={styles.tmdbLogo} />}
           </div>
         </div>
-
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;
