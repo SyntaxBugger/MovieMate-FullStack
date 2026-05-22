@@ -50,7 +50,7 @@ const Footer = ({ setPage }) => {
             <ul className={styles.footerLinks}>
               <li><button onClick={() => setPage("analytics")}>Analytics</button></li>
               <li><button onClick={() => setPage("mynotes")}>My Notes</button></li>
-              <li><button onClick={() => setPage("profile")}>Profile</button></li>
+              
               <li><a href="#">Trending</a></li>
             </ul>
           </div>
